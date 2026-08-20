@@ -2,11 +2,22 @@ const Domain = require('../models/Domain');
 
 exports.getPublicDomains = async (req, res, next) => {
   try {
+    const defaultName = (process.env.DEFAULT_DOMAIN || 'tempmailnova.com').toLowerCase();
+
+    // Deactivate local/test domains if any exist in DB
+    await Domain.updateMany({ name: { $in: ['tempmail.local', 'disposable.local', 'tmpbox.dev'] } }, { isActive: false, isDefault: false });
+
+    // Ensure production domain is active in DB
+    let prodDomain = await Domain.findOne({ name: defaultName });
+    if (!prodDomain) {
+      prodDomain = await Domain.create({ name: defaultName, isDefault: true, isActive: true });
+    } else if (!prodDomain.isActive || !prodDomain.isDefault) {
+      await Domain.updateOne({ name: defaultName }, { isDefault: true, isActive: true });
+    }
+
     let domains = await Domain.find({ isActive: true }).select('name isDefault isPremium usageCount');
     
-    // Fallback if DB empty
     if (domains.length === 0) {
-      const defaultName = process.env.DEFAULT_DOMAIN || 'tempmail.local';
       domains = [{ name: defaultName, isDefault: true, isPremium: false, usageCount: 0 }];
     }
 

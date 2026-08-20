@@ -14,7 +14,7 @@ const getActiveDomainName = async () => {
   const anyDomain = await Domain.findOne({ isActive: true });
   if (anyDomain) return anyDomain.name;
 
-  return process.env.DEFAULT_DOMAIN || 'tempmail.local';
+  return process.env.DEFAULT_DOMAIN || 'tempmailnova.com';
 };
 
 exports.generateRandomInbox = async (req, res, next) => {
