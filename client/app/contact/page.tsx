@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Mail, MessageSquare, Send, CheckCircle2, PhoneCall, Globe } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -16,31 +17,23 @@ export default function ContactPage() {
     e.preventDefault();
     setLoading(true);
 
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '';
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '';
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '';
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_mdmhd9a';
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_rjjc9al';
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'ekuskUcrGiLPmY7gR';
 
     try {
-      if (serviceId && templateId && publicKey) {
-        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            service_id: serviceId,
-            template_id: templateId,
-            user_id: publicKey,
-            template_params: {
-              from_name: name,
-              from_email: email,
-              subject: subject,
-              message: message,
-              to_email: 'helptempmailnova@gmail.com',
-            },
-          }),
-        });
-      }
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: name,
+          from_email: email,
+          subject: subject,
+          message: message,
+          to_email: 'helptempmailnova@gmail.com',
+        },
+        publicKey
+      );
     } catch (error) {
       console.error('EmailJS Submission Error:', error);
     } finally {
