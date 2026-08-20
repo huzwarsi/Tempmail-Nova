@@ -6,15 +6,18 @@ mongoose.set('bufferCommands', false);
 const seedDefaultDomains = async () => {
   try {
     const Domain = require('../models/Domain');
-    const domainCount = await Domain.countDocuments();
-    if (domainCount === 0) {
-      const defaultDomain = process.env.DEFAULT_DOMAIN || 'tmpbox.dev';
-      await Domain.create([
-        { name: defaultDomain, isDefault: true, isActive: true },
-        { name: 'tempmail.local', isDefault: false, isActive: true },
-        { name: 'disposable.local', isDefault: false, isActive: true }
-      ]);
-      console.log(`[Database Seed]: Created default domains (${defaultDomain}, tempmail.local, disposable.local)`);
+    const defaultDomain = process.env.DEFAULT_DOMAIN || 'tempmailnova.com';
+
+    // Ensure production domain exists and is set as active primary default
+    const existingDefault = await Domain.findOne({ name: defaultDomain.toLowerCase() });
+    if (!existingDefault) {
+      await Domain.updateMany({}, { isDefault: false });
+      await Domain.create({ name: defaultDomain.toLowerCase(), isDefault: true, isActive: true });
+      console.log(`[Database Seed]: Successfully added & activated primary domain: ${defaultDomain}`);
+    } else if (!existingDefault.isDefault || !existingDefault.isActive) {
+      await Domain.updateMany({}, { isDefault: false });
+      await Domain.updateOne({ name: defaultDomain.toLowerCase() }, { isDefault: true, isActive: true });
+      console.log(`[Database Seed]: Ensured ${defaultDomain} is active default`);
     }
   } catch (err) {
     console.warn('[Database Seed Warning]:', err.message);
