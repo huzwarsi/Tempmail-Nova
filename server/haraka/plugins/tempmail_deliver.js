@@ -5,9 +5,6 @@
  *
  * Flow:
  *   External Mail Server → Haraka (port 25) → This Plugin → Express API POST /smtp/incoming
- *
- * The plugin streams the raw MIME email data to the Express API,
- * which then parses it, stores it in MongoDB, and pushes it via Socket.io.
  */
 
 'use strict';
@@ -42,37 +39,71 @@ exports.hook_queue = function (next, connection) {
     return next(DENYSOFT, 'Internal error: no transaction');
   }
 
-  // Use Haraka's built-in get_data to reliably retrieve the raw email Buffer
-  transaction.message_stream.get_data((buffer) => {
-    const rawEmail = buffer || Buffer.from('');
+  // IMPORTANT: Capture all transaction data BEFORE get_data callback
+  // Inside get_data callback, transaction context may be partially invalidated
+  const recipients = (transaction.rcpt_to || []).map(function (rcpt) {
+    if (typeof rcpt.address === 'function') return rcpt.address().toLowerCase();
+    if (rcpt.address) return String(rcpt.address).toLowerCase();
+    return String(rcpt).toLowerCase();
+  });
+
+  var senderAddress = 'unknown@sender.com';
+  try {
+    if (transaction.mail_from) {
+      if (typeof transaction.mail_from.address === 'function') {
+        senderAddress = transaction.mail_from.address().toLowerCase();
+      } else if (transaction.mail_from.address) {
+        senderAddress = String(transaction.mail_from.address).toLowerCase();
+      } else {
+        senderAddress = String(transaction.mail_from).replace(/[<>]/g, '').toLowerCase();
+      }
+    }
+  } catch (e) {
+    plugin.logwarn('Could not extract sender address: ' + e.message);
+  }
+
+  var remoteIP = '0.0.0.0';
+  try {
+    remoteIP = connection.remote ? connection.remote.ip : '0.0.0.0';
+  } catch (e) {
+    // ignore
+  }
+
+  plugin.loginfo('Sender: ' + senderAddress + ' | Recipients: ' + recipients.join(', '));
+
+  // Build metadata BEFORE get_data
+  var meta = JSON.stringify({
+    recipients: recipients,
+    sender: senderAddress,
+    remoteIP: remoteIP,
+    internalSecret: INTERNAL_SECRET,
+  });
+  var metaBase64 = Buffer.from(meta).toString('base64');
+
+  // Now stream the raw email body
+  var chunks = [];
+  var messageStream = transaction.message_stream;
+
+  messageStream.on('data', function (chunk) {
+    chunks.push(chunk);
+  });
+
+  messageStream.on('error', function (err) {
+    plugin.logerror('Stream error: ' + err.message);
+    return next(DENYSOFT, 'Error reading email stream');
+  });
+
+  messageStream.on('end', function () {
+    var rawEmail = Buffer.concat(chunks);
 
     if (rawEmail.length === 0) {
       plugin.logerror('Received empty raw email buffer');
       return next(DENYSOFT, 'Empty email message');
     }
 
-    // Build recipient list safely
-    const recipients = (transaction.rcpt_to || []).map((rcpt) => {
-      const addr = typeof rcpt.address === 'function' ? rcpt.address() : (rcpt.address || String(rcpt));
-      return String(addr).toLowerCase();
-    });
+    plugin.loginfo('Delivering ' + rawEmail.length + ' bytes to Express API (' + EXPRESS_API_HOST + ':' + EXPRESS_API_PORT + ')');
 
-    const sender = transaction.mail_from ? transaction.mail_from.address().toLowerCase() : 'unknown@sender.com';
-
-    // Build metadata object to send alongside the raw email
-    const meta = JSON.stringify({
-      recipients,
-      sender,
-      remoteIP: connection.remote ? connection.remote.ip : '0.0.0.0',
-      internalSecret: INTERNAL_SECRET,
-    });
-
-    const metaBase64 = Buffer.from(meta).toString('base64');
-
-    plugin.loginfo(`Delivering email to Express API (${EXPRESS_API_HOST}:${EXPRESS_API_PORT}${EXPRESS_API_PATH}) for: ${recipients.join(', ')}`);
-
-    // POST the raw email + metadata to Express API
-    const requestOptions = {
+    var requestOptions = {
       hostname: EXPRESS_API_HOST,
       port: EXPRESS_API_PORT,
       path: EXPRESS_API_PATH,
@@ -83,41 +114,44 @@ exports.hook_queue = function (next, connection) {
         'X-TempMail-Meta': metaBase64,
         'X-Internal-Secret': INTERNAL_SECRET,
       },
-      timeout: 10000,
+      timeout: 15000,
     };
 
-    const protocol = USE_HTTPS ? https : http;
+    var protocol = USE_HTTPS ? https : http;
 
-    const req = protocol.request(requestOptions, (res) => {
-      let responseBody = '';
+    var req = protocol.request(requestOptions, function (res) {
+      var responseBody = '';
 
-      res.on('data', (chunk) => {
+      res.on('data', function (chunk) {
         responseBody += chunk;
       });
 
-      res.on('end', () => {
+      res.on('end', function () {
         if (res.statusCode === 200 || res.statusCode === 201) {
-          plugin.loginfo(`✅ Email successfully delivered to Express API for: ${recipients.join(', ')}`);
+          plugin.loginfo('✅ Email delivered to Express API for: ' + recipients.join(', '));
           return next(OK);
         } else {
-          plugin.logerror(`Express API returned HTTP ${res.statusCode}: ${responseBody}`);
+          plugin.logerror('Express API returned HTTP ' + res.statusCode + ': ' + responseBody);
           return next(DENYSOFT, 'Delivery service temporarily unavailable');
         }
       });
     });
 
-    req.on('timeout', () => {
-      plugin.logerror(`Express API request timed out (${EXPRESS_API_HOST}:${EXPRESS_API_PORT})`);
+    req.on('timeout', function () {
+      plugin.logerror('Express API request timed out');
       req.destroy();
       return next(DENYSOFT, 'Delivery timeout');
     });
 
-    req.on('error', (err) => {
-      plugin.logerror(`Failed to reach Express API (${EXPRESS_API_HOST}:${EXPRESS_API_PORT}): ${err.message}`);
+    req.on('error', function (err) {
+      plugin.logerror('Failed to reach Express API: ' + err.message);
       return next(DENYSOFT, 'Delivery service unreachable');
     });
 
     req.write(rawEmail);
     req.end();
   });
+
+  // Start reading the message stream
+  messageStream.resume();
 };
