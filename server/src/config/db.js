@@ -6,18 +6,19 @@ mongoose.set('bufferCommands', false);
 const seedDefaultDomains = async () => {
   try {
     const Domain = require('../models/Domain');
-    const defaultDomain = process.env.DEFAULT_DOMAIN || 'tempmailnova.com';
+    const defaultDomain = (process.env.DEFAULT_DOMAIN || 'tempmailnova.com').toLowerCase();
 
-    // Ensure production domain exists and is set as active primary default
-    const existingDefault = await Domain.findOne({ name: defaultDomain.toLowerCase() });
+    // Deactivate old local testing domains from MongoDB
+    await Domain.updateMany({ name: { $ne: defaultDomain } }, { isActive: false, isDefault: false });
+
+    // Ensure production domain exists and is the ONLY active primary default
+    const existingDefault = await Domain.findOne({ name: defaultDomain });
     if (!existingDefault) {
-      await Domain.updateMany({}, { isDefault: false });
-      await Domain.create({ name: defaultDomain.toLowerCase(), isDefault: true, isActive: true });
+      await Domain.create({ name: defaultDomain, isDefault: true, isActive: true });
       console.log(`[Database Seed]: Successfully added & activated primary domain: ${defaultDomain}`);
-    } else if (!existingDefault.isDefault || !existingDefault.isActive) {
-      await Domain.updateMany({}, { isDefault: false });
-      await Domain.updateOne({ name: defaultDomain.toLowerCase() }, { isDefault: true, isActive: true });
-      console.log(`[Database Seed]: Ensured ${defaultDomain} is active default`);
+    } else {
+      await Domain.updateOne({ name: defaultDomain }, { isDefault: true, isActive: true });
+      console.log(`[Database Seed]: Ensured ${defaultDomain} is sole active default domain`);
     }
   } catch (err) {
     console.warn('[Database Seed Warning]:', err.message);
