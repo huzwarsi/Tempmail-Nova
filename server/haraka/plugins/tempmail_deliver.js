@@ -26,6 +26,12 @@ exports.register = function () {
   this.loginfo('TempMail Deliver Plugin: Registered and ready');
 };
 
+exports.hook_rcpt = function (next, connection, params) {
+  const rcpt = params[0];
+  this.loginfo(`Accepting recipient: ${rcpt.address()}`);
+  return next(OK);
+};
+
 exports.hook_queue = function (next, connection) {
   const plugin = this;
   const transaction = connection.transaction;
