@@ -29,7 +29,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://tempmailnova.com'),
   verification: {
-    google: 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE',
+    google: '9-59SHpJxsS8Z5gGw7n3VC75qEyWGngBkeq_VAPlN00',
   },
   alternates: {
     canonical: 'https://tempmailnova.com',
