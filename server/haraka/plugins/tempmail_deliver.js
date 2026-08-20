@@ -27,8 +27,9 @@ exports.register = function () {
 };
 
 exports.hook_rcpt = function (next, connection, params) {
-  const rcpt = params[0];
-  this.loginfo(`Accepting recipient: ${rcpt.address()}`);
+  const rcptObj = params && params[0];
+  const rcptAddr = rcptObj ? (typeof rcptObj.address === 'function' ? rcptObj.address() : (rcptObj.address || String(rcptObj))) : 'unknown';
+  this.loginfo(`Accepting recipient: ${rcptAddr}`);
   return next(OK);
 };
 
@@ -57,8 +58,11 @@ exports.hook_queue = function (next, connection) {
   messageStream.on('end', () => {
     const rawEmail = Buffer.concat(chunks);
 
-    // Build recipient list
-    const recipients = transaction.rcpt_to.map((rcpt) => rcpt.address().toLowerCase());
+    // Build recipient list safely
+    const recipients = transaction.rcpt_to.map((rcpt) => {
+      const addr = typeof rcpt.address === 'function' ? rcpt.address() : (rcpt.address || String(rcpt));
+      return String(addr).toLowerCase();
+    });
 
     // Build metadata object to send alongside the raw email
     const meta = JSON.stringify({
