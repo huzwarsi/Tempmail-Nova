@@ -13,7 +13,7 @@ exports.createInbox = async (req, res, next) => {
 
     if (!selectedDomain) {
       const defaultDomainDoc = await Domain.findOne({ isActive: true, isDefault: true });
-      selectedDomain = defaultDomainDoc ? defaultDomainDoc.name : (process.env.DEFAULT_DOMAIN || 'tempmail.local');
+      selectedDomain = defaultDomainDoc ? defaultDomainDoc.name : (process.env.DEFAULT_DOMAIN || 'tempmailnova.com');
     }
 
     const cleanUser = username ? username.toLowerCase().replace(/[^a-z0-9._-]/g, '') : 'api_' + Math.random().toString(36).substring(2, 9);
