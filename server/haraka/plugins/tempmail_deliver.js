@@ -15,15 +15,15 @@
 const http = require('http');
 const https = require('https');
 
-// Configuration
-const EXPRESS_API_HOST = process.env.EXPRESS_HOST || '127.0.0.1';
-const EXPRESS_API_PORT = process.env.EXPRESS_PORT || 5001;
+// Configuration — in Docker network, Express API is accessible at host 'server'
+const EXPRESS_API_HOST = process.env.EXPRESS_HOST || 'server';
+const EXPRESS_API_PORT = parseInt(process.env.EXPRESS_PORT || '5001', 10);
 const EXPRESS_API_PATH = '/smtp/incoming';
 const USE_HTTPS = process.env.SMTP_BRIDGE_HTTPS === 'true';
 const INTERNAL_SECRET = process.env.SMTP_INTERNAL_SECRET || 'haraka_internal_tempmail_secret';
 
 exports.register = function () {
-  this.loginfo('TempMail Deliver Plugin: Registered and ready');
+  this.loginfo(`TempMail Deliver Plugin: Registered (Targeting ${EXPRESS_API_HOST}:${EXPRESS_API_PORT})`);
 };
 
 exports.hook_rcpt = function (next, connection, params) {
@@ -42,37 +42,34 @@ exports.hook_queue = function (next, connection) {
     return next(DENYSOFT, 'Internal error: no transaction');
   }
 
-  // Collect raw email message into a buffer
-  const chunks = [];
-  const messageStream = transaction.message_stream;
+  // Use Haraka's built-in get_data to reliably retrieve the raw email Buffer
+  transaction.message_stream.get_data((buffer) => {
+    const rawEmail = buffer || Buffer.from('');
 
-  messageStream.on('data', (chunk) => {
-    chunks.push(chunk);
-  });
-
-  messageStream.on('error', (err) => {
-    plugin.logerror(`Stream error: ${err.message}`);
-    return next(DENYSOFT, 'Error reading email stream');
-  });
-
-  messageStream.on('end', () => {
-    const rawEmail = Buffer.concat(chunks);
+    if (rawEmail.length === 0) {
+      plugin.logerror('Received empty raw email buffer');
+      return next(DENYSOFT, 'Empty email message');
+    }
 
     // Build recipient list safely
-    const recipients = transaction.rcpt_to.map((rcpt) => {
+    const recipients = (transaction.rcpt_to || []).map((rcpt) => {
       const addr = typeof rcpt.address === 'function' ? rcpt.address() : (rcpt.address || String(rcpt));
       return String(addr).toLowerCase();
     });
 
+    const sender = transaction.mail_from ? transaction.mail_from.address().toLowerCase() : 'unknown@sender.com';
+
     // Build metadata object to send alongside the raw email
     const meta = JSON.stringify({
       recipients,
-      sender: transaction.mail_from.address().toLowerCase(),
-      remoteIP: connection.remote.ip,
+      sender,
+      remoteIP: connection.remote ? connection.remote.ip : '0.0.0.0',
       internalSecret: INTERNAL_SECRET,
     });
 
     const metaBase64 = Buffer.from(meta).toString('base64');
+
+    plugin.loginfo(`Delivering email to Express API (${EXPRESS_API_HOST}:${EXPRESS_API_PORT}${EXPRESS_API_PATH}) for: ${recipients.join(', ')}`);
 
     // POST the raw email + metadata to Express API
     const requestOptions = {
@@ -86,7 +83,7 @@ exports.hook_queue = function (next, connection) {
         'X-TempMail-Meta': metaBase64,
         'X-Internal-Secret': INTERNAL_SECRET,
       },
-      timeout: 15000,
+      timeout: 10000,
     };
 
     const protocol = USE_HTTPS ? https : http;
@@ -100,30 +97,27 @@ exports.hook_queue = function (next, connection) {
 
       res.on('end', () => {
         if (res.statusCode === 200 || res.statusCode === 201) {
-          plugin.loginfo(`Email delivered to Express API for: ${recipients.join(', ')}`);
+          plugin.loginfo(`✅ Email successfully delivered to Express API for: ${recipients.join(', ')}`);
           return next(OK);
         } else {
-          plugin.logerror(`Express API returned ${res.statusCode}: ${responseBody}`);
+          plugin.logerror(`Express API returned HTTP ${res.statusCode}: ${responseBody}`);
           return next(DENYSOFT, 'Delivery service temporarily unavailable');
         }
       });
     });
 
     req.on('timeout', () => {
-      plugin.logerror('Express API request timed out');
+      plugin.logerror(`Express API request timed out (${EXPRESS_API_HOST}:${EXPRESS_API_PORT})`);
       req.destroy();
       return next(DENYSOFT, 'Delivery timeout');
     });
 
     req.on('error', (err) => {
-      plugin.logerror(`Failed to reach Express API: ${err.message}`);
+      plugin.logerror(`Failed to reach Express API (${EXPRESS_API_HOST}:${EXPRESS_API_PORT}): ${err.message}`);
       return next(DENYSOFT, 'Delivery service unreachable');
     });
 
     req.write(rawEmail);
     req.end();
   });
-
-  // Start reading the message stream
-  messageStream.resume();
 };
