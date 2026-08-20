@@ -17,6 +17,7 @@ dist/
 build/
 client/dist/
 client/build/
+client/.next/
 
 # Logs
 logs/

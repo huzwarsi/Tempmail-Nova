@@ -76,12 +76,10 @@ services:
     networks:
       - tempmail-net
 
-  # ── React Frontend + Nginx Reverse Proxy ──────────────────
-  client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-    container_name: tempmail-client
+  # ── Nginx Reverse Proxy + SSL (Backend API Gateway) ────────
+  nginx:
+    image: nginx:alpine
+    container_name: tempmail-nginx
     restart: always
     ports:
       - "80:80"

@@ -47,8 +47,8 @@ jobs:
             echo "Deploying triggered branch: $BRANCH"
             
             git fetch origin "$BRANCH"
-            git checkout "$BRANCH"
-            git pull origin "$BRANCH"
+            git checkout -f "$BRANCH"
+            git reset --hard "origin/$BRANCH"
 
             # 4. Detect Docker Compose version (v2 vs v1)
             if command -v docker &> /dev/null && docker compose version &> /dev/null; then
