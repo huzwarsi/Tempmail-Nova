@@ -46,7 +46,8 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_INTERNAL_URL || 'http://16.170.6.246';
+    const backendUrl = process.env.BACKEND_INTERNAL_URL;
+    if (!backendUrl) return [];
     return [
       {
         source: '/api/:path*',
