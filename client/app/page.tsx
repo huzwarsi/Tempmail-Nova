@@ -1,18 +1,30 @@
-'use client';
-
 import React from 'react';
+import type { Metadata } from 'next';
 import Hero from '../components/landing/Hero';
 import EducationalContent from '../components/landing/EducationalContent';
 import FAQ from '../components/landing/FAQ';
 import { FAQ_LIST } from '../lib/faq-data';
-import InboxList from '../components/inbox/InboxList';
-import EmailViewer from '../components/inbox/EmailViewer';
-import { useInbox } from '../context/InboxContext';
+import InboxSection from '../components/inbox/InboxSection';
 import { FAQPageJsonLd } from '../lib/structured-data';
 
-export default function HomePage() {
-  const { selectedEmail, setSelectedEmail } = useInbox();
+/**
+ * Homepage — Server Component (SSR)
+ *
+ * Google crawler receives fully rendered HTML for:
+ * - H1 title, subtitle, trust badges (Hero)
+ * - 18KB educational content with H2 hierarchy (EducationalContent)
+ * - 12 FAQ items with FAQPage JSON-LD schema
+ *
+ * Only the interactive inbox (InboxSection) is hydrated client-side.
+ */
 
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://tempmailnova.com',
+  },
+};
+
+export default function HomePage() {
   const formattedFaqs = FAQ_LIST.map((f) => ({ question: f.q, answer: f.a }));
 
   return (
@@ -20,28 +32,16 @@ export default function HomePage() {
       <FAQPageJsonLd faqs={formattedFaqs} />
 
       <div className="space-y-12 pb-16">
-        {/* Main Hero & Generator Section */}
+        {/* Main Hero & Generator Section (SSR) */}
         <Hero />
 
-        {/* Centered Inbox Container */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl sm:max-w-4xl mx-auto">
-            {selectedEmail ? (
-              <EmailViewer
-                email={selectedEmail}
-                onBack={() => setSelectedEmail(null)}
-                onDelete={() => setSelectedEmail(null)}
-              />
-            ) : (
-              <InboxList />
-            )}
-          </div>
-        </div>
+        {/* Interactive Inbox — Client Component Island */}
+        <InboxSection />
 
-        {/* Complete Non-Repetitive Educational Content & H2 Hierarchy */}
+        {/* Complete Non-Repetitive Educational Content & H2 Hierarchy (SSR) */}
         <EducationalContent />
 
-        {/* 12 Verified Factual FAQ Accordion */}
+        {/* 12 Verified Factual FAQ Accordion (SSR + Client hydration) */}
         <FAQ />
       </div>
     </>

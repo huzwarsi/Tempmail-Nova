@@ -28,11 +28,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tempmailnova.com'),
+  verification: {
+    google: 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE',
+  },
   alternates: {
     canonical: 'https://tempmailnova.com',
   },
   title: {
-    default: 'Temp Mail – Free Temporary Email Generator | TempMail Nova',
+    default: 'Temp Mail | Free Temporary Email Generator',
     template: '%s | TempMail Nova',
   },
   description:
@@ -70,23 +73,23 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://tempmailnova.com',
     siteName: 'TempMail Nova',
-    title: 'Temp Mail – Free Temporary Email Generator | TempMail Nova',
+    title: 'Temp Mail | Free Temporary Email Generator',
     description:
       'Generate a free temporary email address instantly with TempMail Nova. Receive verification emails, OTPs and notifications in a disposable inbox without registration.',
     images: [
       {
-        url: 'https://tempmailnova.com/logo.png',
-        width: 512,
-        height: 512,
-        alt: 'TempMail Nova Logo',
+        url: 'https://tempmailnova.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'TempMail Nova — Free Temporary Email Generator',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Temp Mail – Free Temporary Email Generator | TempMail Nova',
+    title: 'Temp Mail | Free Temporary Email Generator',
     description: 'Generate a free temporary email address instantly with TempMail Nova. Receive verification emails and OTPs without registration.',
-    images: ['https://tempmailnova.com/logo.png'],
+    images: ['https://tempmailnova.com/og-image.png'],
   },
   icons: {
     icon: [

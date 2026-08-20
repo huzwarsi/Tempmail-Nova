@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     title: 'Disposable Email & Privacy Guides | TempMail Nova Blog',
     description: 'In-depth articles, security guides, and technical breakdowns on disposable temporary email and online privacy.',
     siteName: 'TempMail Nova',
-    images: [{ url: 'https://tempmailnova.com/logo.png', width: 512, height: 512, alt: 'TempMail Nova Blog' }],
+    images: [{ url: 'https://tempmailnova.com/og-image.png', width: 1200, height: 630, alt: 'TempMail Nova Blog' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Disposable Email & Privacy Guides | TempMail Nova Blog',
     description: 'In-depth articles, security guides, and technical breakdowns on disposable temporary email and online privacy.',
-    images: ['https://tempmailnova.com/logo.png'],
+    images: ['https://tempmailnova.com/og-image.png'],
   },
 };
 
