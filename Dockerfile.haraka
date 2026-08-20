@@ -1,0 +1,22 @@
+# ── Haraka SMTP Server Container ──────────────────────────────────────────────
+FROM node:20-alpine
+
+# Install Haraka globally
+RUN npm install -g Haraka
+
+WORKDIR /haraka
+
+# Initialize a new Haraka installation in this directory
+RUN haraka -i /haraka
+
+# Copy our custom configuration over Haraka's defaults
+COPY server/haraka/config/ /haraka/config/
+
+# Copy our custom tempmail_deliver plugin
+COPY server/haraka/plugins/tempmail_deliver.js /haraka/plugins/
+
+# Expose SMTP ports
+EXPOSE 25 587
+
+# Start Haraka
+CMD ["haraka", "-c", "/haraka"]
