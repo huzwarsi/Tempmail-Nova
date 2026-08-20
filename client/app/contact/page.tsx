@@ -10,16 +10,47 @@ export default function ContactPage() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
+    setLoading(true);
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '';
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '';
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '';
+
+    try {
+      if (serviceId && templateId && publicKey) {
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            service_id: serviceId,
+            template_id: templateId,
+            user_id: publicKey,
+            template_params: {
+              from_name: name,
+              from_email: email,
+              subject: subject,
+              message: message,
+              to_email: 'tempmailnova@gmail.com',
+            },
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('EmailJS Submission Error:', error);
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
       setName('');
       setEmail('');
       setSubject('');
       setMessage('');
-      setSubmitted(false);
-    }, 4000);
+    }
   };
 
   return (
@@ -120,10 +151,11 @@ export default function ContactPage() {
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 dark:bg-gradient-to-r dark:from-emerald-500 dark:to-teal-400 font-bold text-white dark:text-slate-950 transition text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 dark:bg-gradient-to-r dark:from-emerald-500 dark:to-teal-400 font-bold text-white dark:text-slate-950 transition text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
-                <span>Send Message</span>
+                <span>{loading ? 'Sending Message...' : 'Send Message'}</span>
               </button>
             </form>
           )}
