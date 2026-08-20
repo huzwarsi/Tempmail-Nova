@@ -72,6 +72,21 @@ jobs:
             sudo systemctl stop nginx 2>/dev/null || true
             sudo systemctl stop apache2 2>/dev/null || true
 
+            # 5.5 Create/Update .env file with production environment variables
+            cat > .env <<'ENVEOF'
+            DEFAULT_DOMAIN=tempmailnova.com
+            FRONTEND_URL=https://tempmailnova.com
+            MAX_INBOX_EXPIRATION_HOURS=24
+            ENVEOF
+            # Trim leading whitespace from .env lines
+            sed -i 's/^[[:space:]]*//' .env
+
+            # Append secrets if they exist (set via GitHub Secrets)
+            [ -n "${{ secrets.JWT_SECRET }}" ] && echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            [ -n "${{ secrets.SMTP_INTERNAL_SECRET }}" ] && echo "SMTP_INTERNAL_SECRET=${{ secrets.SMTP_INTERNAL_SECRET }}" >> .env
+
+            echo "✅ .env file created with production values"
+
             # 6. Rebuild and restart production containers
             $COMPOSE_CMD -f docker-compose.prod.yml up -d --build
 

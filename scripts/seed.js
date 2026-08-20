@@ -19,7 +19,7 @@ const seed = async () => {
   console.log('✅ MongoDB connected');
 
   // ── 1. Create default disposable domains ─────────────────────────────────
-  const defaultDomain = process.env.DEFAULT_DOMAIN || 'tmpbox.dev';
+  const defaultDomain = process.env.DEFAULT_DOMAIN || 'tempmailnova.com';
 
   const domains = [
     { name: defaultDomain, isDefault: true, isActive: true, isPremium: false },
@@ -35,7 +35,7 @@ const seed = async () => {
   }
 
   // ── 2. Create admin user ──────────────────────────────────────────────────
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@tempmail.local';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@tempmailnova.com';
   const adminPassword = process.env.ADMIN_PASSWORD || 'AdminSecurePass123!';
 
   const existingAdmin = await User.findOne({ email: adminEmail });
