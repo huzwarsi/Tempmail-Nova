@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import InboxList from '../components/inbox/InboxList';
-import EmailViewer from '../components/inbox/EmailViewer';
-import { useInbox } from '../context/InboxContext';
+import InboxList from './InboxList';
+import EmailViewer from './EmailViewer';
+import { useInbox } from '../../context/InboxContext';
 
 /**
  * Client-only interactive inbox section.
