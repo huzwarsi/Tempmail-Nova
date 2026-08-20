@@ -46,7 +46,7 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_INTERNAL_URL || 'http://localhost:5001';
+    const backendUrl = process.env.BACKEND_INTERNAL_URL || 'http://16.170.6.246';
     return [
       {
         source: '/api/:path*',
