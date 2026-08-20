@@ -67,8 +67,8 @@ services:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET}
       - SMTP_INTERNAL_SECRET=${SMTP_INTERNAL_SECRET}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
+      - FRONTEND_URL=${FRONTEND_URL:-https://tempmailnova.com}
+      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN:-tempmailnova.com}
       - MAX_INBOX_EXPIRATION_HOURS=${MAX_INBOX_EXPIRATION_HOURS}
     depends_on:
       - mongodb
