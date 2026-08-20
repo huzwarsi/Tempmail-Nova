@@ -108,7 +108,7 @@ export default function PrivacyPolicyPage() {
           <section className="space-y-2 pt-2 border-t border-slate-200 dark:border-emerald-500/20">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">6. Contact Information</h3>
             <p className="text-xs">
-              If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <span className="font-mono-code text-emerald-700 dark:text-emerald-400 font-bold">privacy@tempmailnova.com</span>.
+              If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <span className="font-mono-code text-emerald-700 dark:text-emerald-400 font-bold">tempmailnova@gmail.com</span>.
             </p>
           </section>
         </div>

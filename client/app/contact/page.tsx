@@ -41,13 +41,13 @@ export default function ContactPage() {
           <div className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-emerald-500/25 space-y-2 shadow-md dark:shadow-lg">
             <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             <h4 className="font-bold text-slate-900 dark:text-white text-sm">Email Support</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono-code">support@tempmailnova.com</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono-code">tempmailnova@gmail.com</p>
           </div>
 
           <div className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-emerald-500/25 space-y-2 shadow-md dark:shadow-lg">
             <Globe className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             <h4 className="font-bold text-slate-900 dark:text-white text-sm">Help Center</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono-code">help@tempmailnova.com</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono-code">tempmailnova@gmail.com</p>
           </div>
 
           <div className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-emerald-500/25 space-y-2 shadow-md dark:shadow-lg">
