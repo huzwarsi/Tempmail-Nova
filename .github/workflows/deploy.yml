@@ -51,10 +51,16 @@ jobs:
             git reset --hard "origin/$BRANCH"
 
             # 4. Detect Docker Compose version (v2 vs v1)
+            export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+
             if command -v docker &> /dev/null && docker compose version &> /dev/null; then
               COMPOSE_CMD="docker compose"
             elif command -v docker-compose &> /dev/null; then
               COMPOSE_CMD="docker-compose"
+            elif [ -x /usr/local/bin/docker-compose ]; then
+              COMPOSE_CMD="/usr/local/bin/docker-compose"
+            elif [ -x /usr/bin/docker-compose ]; then
+              COMPOSE_CMD="/usr/bin/docker-compose"
             else
               echo "Error: Neither 'docker compose' nor 'docker-compose' is installed/available on EC2." >&2
               exit 1
@@ -62,7 +68,11 @@ jobs:
 
             echo "Using Compose binary: $COMPOSE_CMD"
 
-            # 5. Rebuild and restart production containers
+            # 5. Free Port 80 if host standalone Nginx/Apache is running
+            sudo systemctl stop nginx 2>/dev/null || true
+            sudo systemctl stop apache2 2>/dev/null || true
+
+            # 6. Rebuild and restart production containers
             $COMPOSE_CMD -f docker-compose.prod.yml up -d --build
 
             # 6. Cleanup dangling Docker images to preserve EC2 disk space
