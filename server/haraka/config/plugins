@@ -1,8 +1,8 @@
 ; Haraka Plugins Configuration
 ; Order matters!
 
-; DNS Blocklist check (basic anti-spam)
-dns-list
+; DNS Blocklist check (disabled for instant temp mail delivery)
+; dns-list
 
 ; Rate limiting per IP
 limit
