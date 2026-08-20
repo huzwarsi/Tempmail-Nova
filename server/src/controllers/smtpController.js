@@ -106,13 +106,12 @@ exports.receiveIncoming = async (req, res, next) => {
       const normalizedAddress = recipientAddress.toLowerCase().trim();
       const domainPart = normalizedAddress.split('@')[1];
 
-      // In production, enforce domain check; dev accepts all
-      if (process.env.NODE_ENV === 'production') {
-        const knownDomain = await Domain.findOne({ name: domainPart, isActive: true });
-        if (!knownDomain) {
-          console.warn(`[SMTP Controller] Rejected: unmanaged domain ${domainPart}`);
-          continue;
-        }
+      // Enforce domain check (case-insensitive & fallback to DEFAULT_DOMAIN)
+      const defaultDomainName = (process.env.DEFAULT_DOMAIN || 'tempmailnova.com').toLowerCase();
+      const knownDomain = await Domain.findOne({ name: domainPart.toLowerCase(), isActive: true });
+      if (!knownDomain && domainPart.toLowerCase() !== defaultDomainName) {
+        console.warn(`[SMTP Controller] Rejected: unmanaged domain ${domainPart}`);
+        continue;
       }
 
       // Auto-create inbox if not exists
