@@ -1,0 +1,49 @@
+{
+  "name": "tempmail-backend",
+  "version": "1.0.0",
+  "description": "Production-Ready Disposable Email SaaS Platform Backend Server",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "tempmail",
+    "disposable-email",
+    "smtp",
+    "mailparser",
+    "express",
+    "mongodb",
+    "socketio"
+  ],
+  "author": "TempMail Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.19.0",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^5.81.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
+    "ioredis": "^5.11.1",
+    "jsonwebtoken": "^9.0.3",
+    "mailparser": "^3.9.14",
+    "mongoose": "^8.24.2",
+    "morgan": "^1.11.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.13",
+    "sanitize-html": "^2.17.6",
+    "smtp-server": "^3.19.2",
+    "socket.io": "^4.8.3",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.1",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
