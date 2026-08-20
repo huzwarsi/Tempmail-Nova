@@ -1,18 +1,11 @@
 ; Haraka Plugins Configuration
-; Each line = one plugin enabled
 ; Order matters!
 
 ; DNS Blocklist check (basic anti-spam)
-dnsbl
-
-; Check recipient is valid for our domains
-rcpt_to.routes
+dns-list
 
 ; Rate limiting per IP
-rate_limit
-
-; Log connections to stdout
-log.hook
+limit
 
 ; Our custom plugin: delivers email to Express API
 tempmail_deliver
