@@ -7,18 +7,6 @@ version: '3.8'
 
 services:
 
-  # ── MongoDB (or use Atlas URI in .env) ────────────────────
-  mongodb:
-    image: mongo:7.0
-    container_name: tempmail-mongo
-    restart: always
-    environment:
-      MONGO_INITDB_DATABASE: tempmail
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - tempmail-net
-
   # ── Redis for BullMQ + Socket.io adapter ──────────────────
   redis:
     image: redis:7-alpine
@@ -61,7 +49,7 @@ services:
       - "5001"   # Internal only — Nginx proxies from 80/443
     environment:
       - PORT=5001
-      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/tempmail}
+      - MONGO_URI=${MONGO_URI}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NODE_ENV=production
@@ -71,7 +59,6 @@ services:
       - DEFAULT_DOMAIN=${DEFAULT_DOMAIN:-tempmailnova.com}
       - MAX_INBOX_EXPIRATION_HOURS=${MAX_INBOX_EXPIRATION_HOURS}
     depends_on:
-      - mongodb
       - redis
     networks:
       - tempmail-net
@@ -94,8 +81,6 @@ services:
       - tempmail-net
 
 volumes:
-  mongo-data:
-    driver: local
   redis-data:
     driver: local
 
