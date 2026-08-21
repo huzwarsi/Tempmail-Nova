@@ -61,7 +61,7 @@ services:
       - "5001"   # Internal only — Nginx proxies from 80/443
     environment:
       - PORT=5001
-      - MONGO_URI=mongodb://mongodb:27017/tempmail
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/tempmail}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NODE_ENV=production
