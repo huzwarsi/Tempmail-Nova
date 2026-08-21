@@ -13,6 +13,7 @@ interface InboxContextType {
   setSelectedEmail: (email: any) => void;
   availableDomains: any[];
   loading: boolean;
+  isGenerating: boolean;
   newEmailNotice: boolean;
   generateRandomInbox: () => Promise<void>;
   createCustomInbox: (customUsername: string, requestedDomain: string) => Promise<any>;
@@ -29,6 +30,7 @@ const InboxContext = createContext<InboxContextType>({
   setSelectedEmail: () => {},
   availableDomains: [],
   loading: false,
+  isGenerating: false,
   newEmailNotice: false,
   generateRandomInbox: async () => {},
   createCustomInbox: async () => {},
@@ -43,15 +45,8 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedEmail, setSelectedEmail] = useState<any>(null);
   const [availableDomains, setAvailableDomains] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [newEmailNotice, setNewEmailNotice] = useState<boolean>(false);
-
-  // Initialize stored address from LocalStorage on client mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('tempmail_current_address');
-      if (saved) setCurrentAddress(saved);
-    }
-  }, []);
 
   // Play notification ping
   const playNotificationPing = () => {
@@ -100,6 +95,7 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Generate random new inbox
   const generateRandomInbox = async () => {
+    setIsGenerating(true);
     setLoading(true);
     setEmails([]);
     setSelectedEmail(null);
@@ -110,16 +106,18 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('tempmail_current_address', data.inbox.address);
       }
-      await fetchEmails(data.inbox.address, true);
+      await fetchEmails(data.inbox.address, false);
     } catch (err) {
       console.error('Failed to generate random inbox:', err);
     } finally {
       setLoading(false);
+      setIsGenerating(false);
     }
   };
 
   // Create custom inbox
   const createCustomInbox = async (customUsername: string, requestedDomain: string) => {
+    setIsGenerating(true);
     setLoading(true);
     setEmails([]);
     setSelectedEmail(null);
@@ -133,18 +131,20 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('tempmail_current_address', data.inbox.address);
       }
-      await fetchEmails(data.inbox.address, true);
+      await fetchEmails(data.inbox.address, false);
       return data;
     } catch (err) {
       throw err;
     } finally {
       setLoading(false);
+      setIsGenerating(false);
     }
   };
 
   // Delete current inbox
   const deleteCurrentInbox = async () => {
     if (!currentAddress) return;
+    setIsGenerating(true);
     setLoading(true);
     setEmails([]);
     setSelectedEmail(null);
@@ -155,19 +155,29 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Failed to delete inbox:', err);
     } finally {
       setLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  // Socket.io subscription + polling effect
+  // Mount initialization: restore saved address from LocalStorage or generate new one
   useEffect(() => {
     fetchDomains();
 
-    if (!currentAddress) {
-      generateRandomInbox();
-      return;
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('tempmail_current_address');
+      if (saved) {
+        setCurrentAddress(saved);
+        fetchEmails(saved, true);
+      } else {
+        generateRandomInbox();
+      }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    fetchEmails(currentAddress, true);
+  // Socket.io subscription + polling effect
+  useEffect(() => {
+    if (!currentAddress) return;
 
     const socket = getSocket();
     if (socket) {
@@ -194,8 +204,7 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
         clearInterval(pollInterval);
       };
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAddress]);
+  }, [currentAddress, fetchEmails]);
 
   return (
     <InboxContext.Provider
@@ -208,6 +217,7 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
         setSelectedEmail,
         availableDomains,
         loading,
+        isGenerating,
         newEmailNotice,
         generateRandomInbox,
         createCustomInbox,

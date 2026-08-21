@@ -17,6 +17,7 @@ export default function GeneratorCard() {
     deleteCurrentInbox,
     fetchEmails,
     loading,
+    isGenerating,
   } = useInbox();
 
   const [copied, setCopied] = useState(false);
@@ -95,7 +96,7 @@ export default function GeneratorCard() {
               type="text"
               readOnly
               aria-label="Your temporary email address"
-              value={loading ? 'Generating email address...' : (currentAddress || 'Generating email address...')}
+              value={isGenerating ? 'Generating email address...' : (currentAddress || 'Generating email address...')}
               className="w-full bg-white dark:bg-[#04070d] border-2 border-emerald-500/50 focus:border-emerald-500 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm md:text-base font-mono-code text-slate-900 dark:text-emerald-300 font-bold tracking-wide shadow-inner truncate transition-all duration-200 group-hover:border-emerald-500"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
@@ -134,11 +135,11 @@ export default function GeneratorCard() {
             className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-[11px] font-bold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-emerald-500/25 transition shadow-sm disabled:opacity-50"
           >
             <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-            <span>Random Address</span>
+            <span>Change Email</span>
           </button>
 
           <button
-            onClick={generateRandomInbox}
+            onClick={() => fetchEmails(currentAddress, true)}
             disabled={loading}
             className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-[11px] font-bold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-emerald-500/25 transition shadow-sm disabled:opacity-50"
           >

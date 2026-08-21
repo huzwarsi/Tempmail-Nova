@@ -17,7 +17,7 @@ const getAvatarGradient = (str = 'S') => {
 };
 
 export default function InboxList() {
-  const { emails, selectedEmail, setSelectedEmail, loading, fetchEmails, currentAddress, newEmailNotice } = useInbox();
+  const { emails, selectedEmail, setSelectedEmail, loading, isGenerating, fetchEmails, currentAddress, newEmailNotice } = useInbox();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredEmails = emails.filter((e) => {
@@ -65,7 +65,7 @@ export default function InboxList() {
             />
           </div>
           <button
-            onClick={() => fetchEmails(currentAddress)}
+            onClick={() => fetchEmails(currentAddress, true)}
             className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-emerald-600 dark:text-emerald-400 border border-slate-300 dark:border-emerald-500/30 transition shadow-sm"
             title="Refresh Inbox"
           >
@@ -83,7 +83,7 @@ export default function InboxList() {
 
       {/* Mail List Area */}
       <div className="flex-1 overflow-y-auto divide-y divide-slate-200 dark:divide-emerald-500/10 bg-white/60 dark:bg-[#060a12]/60">
-        {loading ? (
+        {isGenerating || (loading && emails.length === 0) ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-4">
             <div className="w-16 h-16 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center relative shadow-inner">
               <RefreshCw className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
