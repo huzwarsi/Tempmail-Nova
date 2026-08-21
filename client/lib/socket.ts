@@ -6,17 +6,14 @@ export const getSocket = (): Socket | null => {
   if (typeof window === 'undefined') return null;
 
   if (!socket) {
-    // In dev environment, target backend port 5000. In production, target '/'
     let socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || process.env.NEXT_PUBLIC_API_URL || '';
-    if (typeof window !== 'undefined') {
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5001';
-      } else if (!socketUrl || socketUrl === '/' || socketUrl.startsWith('/')) {
-        socketUrl = 'https://api.tempmailnova.com';
-      }
-    }
-    if (!socketUrl) {
-      socketUrl = 'https://api.tempmailnova.com';
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Local development
+      socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5001';
+    } else {
+      // Production: connect directly to backend VPS (not Vercel frontend)
+      socketUrl = socketUrl || 'https://api.tempmailnova.com';
     }
 
     socket = io(socketUrl, {

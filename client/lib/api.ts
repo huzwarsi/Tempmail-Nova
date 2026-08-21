@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const getBaseURL = () => {
   if (typeof window !== 'undefined') {
-    // On local browser testing, route directly to local Express server port 5001
+    // Local development
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       const envUrl = process.env.NEXT_PUBLIC_API_URL;
       if (envUrl) {
@@ -10,7 +10,9 @@ const getBaseURL = () => {
       }
       return 'http://localhost:5001/api/v1';
     }
+  }
 
+  // Production: target backend VPS directly (not Vercel)
   const customUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.tempmailnova.com';
   return customUrl.endsWith('/api/v1') ? customUrl : `${customUrl}/api/v1`;
 };
