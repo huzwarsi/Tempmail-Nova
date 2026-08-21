@@ -11,13 +11,12 @@ export const getSocket = (): Socket | null => {
     if (typeof window !== 'undefined') {
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5001';
-      } else if (window.location.protocol === 'https:' && socketUrl.startsWith('http:')) {
-        // Prevent Mixed Content Error by targeting current origin
-        socketUrl = '/';
+      } else if (!socketUrl || socketUrl === '/' || socketUrl.startsWith('/')) {
+        socketUrl = 'https://api.tempmailnova.com';
       }
     }
     if (!socketUrl) {
-      socketUrl = '/';
+      socketUrl = 'https://api.tempmailnova.com';
     }
 
     socket = io(socketUrl, {

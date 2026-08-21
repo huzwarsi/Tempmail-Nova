@@ -11,18 +11,8 @@ const getBaseURL = () => {
       return 'http://localhost:5001/api/v1';
     }
 
-    // Prevent Mixed Content Error on Vercel/HTTPS deployment
-    const customUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (window.location.protocol === 'https:' && customUrl?.startsWith('http:')) {
-      return '/api/v1';
-    }
-  }
-
-  const customUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (customUrl) {
-    return customUrl.endsWith('/api/v1') ? customUrl : `${customUrl}/api/v1`;
-  }
-  return '/api/v1';
+  const customUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.tempmailnova.com';
+  return customUrl.endsWith('/api/v1') ? customUrl : `${customUrl}/api/v1`;
 };
 
 const API = axios.create({
