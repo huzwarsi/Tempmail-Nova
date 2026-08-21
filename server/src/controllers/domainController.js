@@ -5,7 +5,7 @@ exports.getPublicDomains = async (req, res, next) => {
     const defaultName = (process.env.DEFAULT_DOMAIN || 'tempmailnova.com').toLowerCase();
 
     // Deactivate local/test domains if any exist in DB
-    await Domain.updateMany({ name: { $in: ['tempmail.local', 'disposable.local', 'tmpbox.dev'] } }, { isActive: false, isDefault: false });
+    await Domain.updateMany({ name: { $in: ['tempmail.local', 'disposable.local'] } }, { isActive: false, isDefault: false });
 
     // Ensure production domain is active in DB
     let prodDomain = await Domain.findOne({ name: defaultName });
