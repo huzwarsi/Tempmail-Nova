@@ -83,10 +83,19 @@ export default function InboxList() {
 
       {/* Mail List Area */}
       <div className="flex-1 overflow-y-auto divide-y divide-slate-200 dark:divide-emerald-500/10 bg-white/60 dark:bg-[#060a12]/60">
-        {loading && emails.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-slate-500 dark:text-slate-400 space-y-3">
-            <RefreshCw className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
-            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400/80">Syncing with mail server...</p>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-4">
+            <div className="w-16 h-16 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center relative shadow-inner">
+              <RefreshCw className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-slate-800 dark:text-white text-base tracking-tight animate-pulse">
+                Generating new email address...
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Connecting to mail server & creating live inbox...
+              </p>
+            </div>
           </div>
         ) : filteredEmails.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-4">

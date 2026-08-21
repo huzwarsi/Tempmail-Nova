@@ -101,6 +101,8 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
   // Generate random new inbox
   const generateRandomInbox = async () => {
     setLoading(true);
+    setEmails([]);
+    setSelectedEmail(null);
     try {
       const { data } = await API.post('/inbox/random', {});
       setCurrentAddress(data.inbox.address);
@@ -108,7 +110,6 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('tempmail_current_address', data.inbox.address);
       }
-      setSelectedEmail(null);
       await fetchEmails(data.inbox.address, true);
     } catch (err) {
       console.error('Failed to generate random inbox:', err);
@@ -120,6 +121,8 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
   // Create custom inbox
   const createCustomInbox = async (customUsername: string, requestedDomain: string) => {
     setLoading(true);
+    setEmails([]);
+    setSelectedEmail(null);
     try {
       const { data } = await API.post('/inbox/custom', {
         customUsername,
@@ -130,7 +133,6 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('tempmail_current_address', data.inbox.address);
       }
-      setSelectedEmail(null);
       await fetchEmails(data.inbox.address, true);
       return data;
     } catch (err) {
@@ -143,11 +145,16 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
   // Delete current inbox
   const deleteCurrentInbox = async () => {
     if (!currentAddress) return;
+    setLoading(true);
+    setEmails([]);
+    setSelectedEmail(null);
     try {
       await API.delete(`/inbox/${currentAddress}`);
       await generateRandomInbox();
     } catch (err) {
       console.error('Failed to delete inbox:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
