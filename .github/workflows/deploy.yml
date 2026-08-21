@@ -88,12 +88,13 @@ jobs:
 
             echo "✅ .env file created with production values"
 
-            # 5.6 Auto-prune old docker images/cache to free EC2 disk space BEFORE build
+            # 5.6 Auto-prune old docker images/cache and stop orphan containers holding ports
+            docker stop tempmail-frontend-nginx tempmail-backend-server tempmail-mongo 2>/dev/null || true
             docker system prune -af --volumes 2>/dev/null || true
             sudo journalctl --vacuum-time=1d 2>/dev/null || true
 
             # 6. Rebuild and restart production containers
-            $COMPOSE_CMD -f docker-compose.prod.yml up -d --build
+            $COMPOSE_CMD -f docker-compose.prod.yml up -d --build --remove-orphans
 
             # 7. Cleanup dangling Docker images to preserve EC2 disk space
             docker image prune -f
