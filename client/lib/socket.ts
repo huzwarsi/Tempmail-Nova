@@ -8,19 +8,24 @@ export const getSocket = (): Socket | null => {
   if (!socket) {
     // In dev environment, target backend port 5000. In production, target '/'
     let socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || process.env.NEXT_PUBLIC_API_URL || '';
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && socketUrl.startsWith('http:')) {
-      // Prevent Mixed Content Error on Vercel HTTPS by using Next.js socket rewrites proxy
+    if (typeof window !== 'undefined') {
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5001';
+      } else if (window.location.protocol === 'https:' && socketUrl.startsWith('http:')) {
+        // Prevent Mixed Content Error by targeting current origin
+        socketUrl = '/';
+      }
+    }
+    if (!socketUrl) {
       socketUrl = '/';
-    } else if (!socketUrl) {
-      socketUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5001' : '/';
     }
 
     socket = io(socketUrl, {
       autoConnect: true,
       transports: ['polling', 'websocket'],
-      reconnectionAttempts: 5,
-      reconnectionDelay: 3000,
-      timeout: 10000,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      timeout: 20000,
     });
 
     socket.on('connect', () => {
