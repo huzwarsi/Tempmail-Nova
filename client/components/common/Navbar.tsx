@@ -21,7 +21,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 dark:bg-[#06090e]/90 backdrop-blur-md border-b border-slate-200 dark:border-emerald-500/20 transition-colors font-manrope">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo Mark */}
           <Link href="/" className="flex items-center space-x-3 group">
@@ -40,8 +40,8 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
+          {/* Desktop Nav Items & Theme Toggle */}
+          <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
             {navLinks.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
@@ -60,18 +60,10 @@ export default function Navbar() {
                 </Link>
               );
             })}
-          </div>
-
-          {/* Controls: Theme & System Status */}
-          <div className="hidden md:flex items-center space-x-3">
-            <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shadow-sm" />
-              <span>SMTP Online</span>
-            </div>
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl border border-slate-200 dark:border-emerald-500/30 bg-slate-100 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 hover:border-emerald-500 transition shadow-sm"
+              className="p-2 rounded-xl border border-slate-200 dark:border-emerald-500/30 bg-slate-100 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 hover:border-emerald-500 transition shadow-sm ml-1"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}

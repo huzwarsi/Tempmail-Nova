@@ -46,7 +46,7 @@ export default function GeneratorCard() {
   };
 
   return (
-    <div className="w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto cyber-card rounded-2xl p-4 sm:p-5 lg:p-5.5 relative overflow-hidden transition-all duration-300">
+    <div className="w-full max-w-4xl mx-auto cyber-card rounded-2xl p-4 sm:p-5 lg:p-5.5 relative overflow-hidden transition-all duration-300">
       {/* Background Ambient Glows */}
       <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />

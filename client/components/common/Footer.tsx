@@ -5,7 +5,7 @@ import { Mail, Shield, CheckCircle2 } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="border-t border-slate-200 dark:border-emerald-500/20 bg-slate-100 dark:bg-[#04060b] py-12 text-slate-600 dark:text-slate-400 transition-colors font-manrope">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-3">
