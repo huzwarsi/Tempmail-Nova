@@ -54,6 +54,9 @@ export default function InboxList() {
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
+              id="inbox-search-input"
+              name="searchInbox"
+              aria-label="Search inbox messages"
               type="text"
               placeholder="Search inbox..."
               value={searchTerm}

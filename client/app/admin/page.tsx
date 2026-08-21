@@ -119,6 +119,9 @@ export default function AdminDashboardPage() {
 
         <form onSubmit={handleAddDomain} className="flex flex-col sm:flex-row gap-3">
           <input
+            id="new-domain-input"
+            name="newDomain"
+            aria-label="New Domain Name"
             type="text"
             placeholder="New Domain (e.g. mailboxnova.com)"
             value={newDomain}

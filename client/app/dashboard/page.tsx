@@ -95,6 +95,9 @@ export default function DeveloperDashboardPage() {
         {/* Generate Key Form */}
         <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-3">
           <input
+            id="key-name-input"
+            name="keyName"
+            aria-label="API Key Name"
             type="text"
             placeholder="Key Name (e.g. Testing App)"
             value={keyName}

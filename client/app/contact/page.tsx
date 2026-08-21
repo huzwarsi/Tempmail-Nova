@@ -95,8 +95,10 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Your Name</label>
+                  <label htmlFor="contact-name" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Your Name</label>
                   <input
+                    id="contact-name"
+                    name="from_name"
                     type="text"
                     required
                     placeholder="John Doe"
@@ -106,8 +108,10 @@ export default function ContactPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Email Address</label>
+                  <label htmlFor="contact-email" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Email Address</label>
                   <input
+                    id="contact-email"
+                    name="from_email"
                     type="email"
                     required
                     placeholder="you@example.com"
@@ -119,8 +123,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Subject</label>
+                <label htmlFor="contact-subject" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Subject</label>
                 <input
+                  id="contact-subject"
+                  name="subject"
                   type="text"
                   required
                   placeholder="e.g. Inquiry about temporary mail services"
@@ -131,8 +137,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Message</label>
+                <label htmlFor="contact-message" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Message</label>
                 <textarea
+                  id="contact-message"
+                  name="message"
                   required
                   rows={4}
                   placeholder="Write your message here..."

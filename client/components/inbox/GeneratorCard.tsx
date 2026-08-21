@@ -83,15 +83,18 @@ export default function GeneratorCard() {
 
       {/* Primary Email Box Container */}
       <div className="space-y-2 mb-4">
-        <label className="block text-[10px] font-bold text-emerald-700 dark:text-emerald-400/90 uppercase tracking-widest font-mono">
+        <label htmlFor="temp-email-address" className="block text-[10px] font-bold text-emerald-700 dark:text-emerald-400/90 uppercase tracking-widest font-mono">
           YOUR TEMPORARY EMAIL ADDRESS:
         </label>
 
         <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
           <div className="relative flex-1 group">
             <input
+              id="temp-email-address"
+              name="tempEmailAddress"
               type="text"
               readOnly
+              aria-label="Your temporary email address"
               value={currentAddress || 'Generating email address...'}
               className="w-full bg-white dark:bg-[#04070d] border-2 border-emerald-500/50 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono-code text-slate-900 dark:text-emerald-300 font-bold tracking-wide shadow-inner truncate transition-all duration-200 group-hover:border-emerald-500"
             />
@@ -176,10 +179,12 @@ export default function GeneratorCard() {
             </div>
           )}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-emerald-400 mb-1.5 uppercase">
+            <label htmlFor="custom-username" className="block text-xs font-bold text-slate-700 dark:text-emerald-400 mb-1.5 uppercase">
               Username / Alias
             </label>
             <input
+              id="custom-username"
+              name="customUsername"
               type="text"
               required
               placeholder="e.g. john.doe"
@@ -189,10 +194,12 @@ export default function GeneratorCard() {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-emerald-400 mb-1.5 uppercase">
+            <label htmlFor="custom-domain" className="block text-xs font-bold text-slate-700 dark:text-emerald-400 mb-1.5 uppercase">
               Select Domain
             </label>
             <select
+              id="custom-domain"
+              name="selectedDomain"
               value={selectedDomain}
               onChange={(e) => setSelectedDomain(e.target.value)}
               className="w-full bg-slate-100 dark:bg-[#04070d] border border-slate-300 dark:border-emerald-500/40 rounded-xl p-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
