@@ -30,7 +30,7 @@ export default function InboxList() {
   });
 
   return (
-    <div className="w-full bg-white/95 dark:bg-[#080d16]/90 backdrop-blur-xl rounded-2xl border-2 border-emerald-500/30 overflow-hidden flex flex-col h-[550px] sm:h-[580px] lg:h-[620px] shadow-xl shadow-slate-200/50 dark:shadow-[0_10px_40px_rgba(0,0,0,0.8)] transition-all duration-300">
+    <div className="w-full bg-white/95 dark:bg-[#080d16]/90 backdrop-blur-xl rounded-2xl border-2 border-emerald-500/30 overflow-hidden flex flex-col h-[500px] sm:h-[550px] lg:h-[580px] shadow-xl shadow-slate-200/50 dark:shadow-[0_10px_40px_rgba(0,0,0,0.8)] transition-all duration-300">
       {/* Top Header Controls */}
       <div className="p-4 sm:px-6 sm:py-4 border-b border-slate-200 dark:border-emerald-500/20 bg-slate-100/90 dark:bg-[#05080e] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-3">
