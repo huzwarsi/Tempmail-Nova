@@ -5,19 +5,16 @@ import GeneratorCard from '../inbox/GeneratorCard';
 export default function Hero() {
   return (
     <div className="relative pt-4 sm:pt-6 pb-6 overflow-hidden font-manrope">
-      {/* Ambient Green Glow Orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
-
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold font-mono mb-3 sm:mb-4">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold font-mono mb-3 sm:mb-4">
           <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
           <span>INSTANT DISPOSABLE MAILBOX</span>
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white mt-1 mb-3 leading-tight max-w-4xl mx-auto">
-          Free <span className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 dark:from-emerald-400 dark:via-teal-300 dark:to-emerald-300 bg-clip-text text-transparent">Temp Mail</span> & Temporary Email Generator
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1 mb-3 leading-tight max-w-4xl mx-auto">
+          Free <span className="text-emerald-600 dark:text-emerald-400">Temp Mail</span> & Temporary Email Generator
         </h1>
 
         {/* Subtitle */}

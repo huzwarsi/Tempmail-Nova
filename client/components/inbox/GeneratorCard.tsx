@@ -48,10 +48,6 @@ export default function GeneratorCard() {
 
   return (
     <div className="w-full max-w-4xl mx-auto cyber-card rounded-2xl p-4 sm:p-5 lg:p-5.5 relative overflow-hidden transition-all duration-300">
-      {/* Background Ambient Glows */}
-      <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-
       {/* Header Status Bar */}
       <div className="flex flex-row items-center justify-between gap-3 mb-3.5 pb-3 border-b border-slate-200 dark:border-emerald-500/20">
         <div className="flex items-center space-x-2">
@@ -106,9 +102,9 @@ export default function GeneratorCard() {
 
           <button
             onClick={handleCopy}
-            className={`flex items-center justify-center space-x-1.5 px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-white dark:text-slate-950 shadow-lg transition transform active:scale-95 text-xs sm:text-sm tracking-wide ${copied
+            className={`flex items-center justify-center space-x-1.5 px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-white dark:text-slate-950 shadow-md transition transform active:scale-95 text-xs sm:text-sm tracking-wide ${copied
                 ? 'bg-emerald-700 dark:bg-emerald-400 shadow-emerald-500/40'
-                : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-gradient-to-r dark:from-emerald-500 dark:via-emerald-400 dark:to-teal-400 dark:hover:from-emerald-400 dark:hover:to-teal-300 shadow-emerald-500/30'
+                : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 shadow-emerald-500/20'
               }`}
           >
             {copied ? (

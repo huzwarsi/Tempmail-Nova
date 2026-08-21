@@ -137,7 +137,7 @@ export default function InboxList() {
                 {/* Sender Column */}
                 <div className="w-1/3 flex items-center space-x-3 overflow-hidden pr-2">
                   <div
-                    className={`w-8 h-8 rounded-lg bg-gradient-to-tr ${avatarGrad} flex items-center justify-center text-white dark:text-slate-950 text-xs font-black shadow-md flex-shrink-0`}
+                    className="w-8 h-8 rounded-lg bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center text-white dark:text-slate-950 text-xs font-bold shadow-sm flex-shrink-0"
                   >
                     {initial}
                   </div>
