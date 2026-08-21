@@ -46,7 +46,7 @@ export default function GeneratorCard() {
   };
 
   return (
-    <div className="w-full max-w-xl sm:max-w-2xl mx-auto cyber-card rounded-2xl p-4 sm:p-5 relative overflow-hidden transition-all duration-300">
+    <div className="w-full max-w-xl sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto cyber-card rounded-2xl p-4 sm:p-5 lg:p-6 relative overflow-hidden transition-all duration-300">
       {/* Background Ambient Glows */}
       <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -58,7 +58,7 @@ export default function GeneratorCard() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-md shadow-emerald-500/50"></span>
           </span>
-          <span className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-400 tracking-wider uppercase font-mono">
+          <span className="text-[10px] sm:text-[11px] font-extrabold text-emerald-700 dark:text-emerald-400 tracking-wider uppercase font-mono">
             Live Mailbox Active
           </span>
         </div>
@@ -83,7 +83,7 @@ export default function GeneratorCard() {
 
       {/* Primary Email Box Container */}
       <div className="space-y-2 mb-4">
-        <label htmlFor="temp-email-address" className="block text-[10px] font-bold text-emerald-700 dark:text-emerald-400/90 uppercase tracking-widest font-mono">
+        <label htmlFor="temp-email-address" className="block text-[10px] sm:text-[11px] font-bold text-emerald-700 dark:text-emerald-400/90 uppercase tracking-widest font-mono">
           YOUR TEMPORARY EMAIL ADDRESS:
         </label>
 
@@ -96,16 +96,16 @@ export default function GeneratorCard() {
               readOnly
               aria-label="Your temporary email address"
               value={currentAddress || 'Generating email address...'}
-              className="w-full bg-white dark:bg-[#04070d] border-2 border-emerald-500/50 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono-code text-slate-900 dark:text-emerald-300 font-bold tracking-wide shadow-inner truncate transition-all duration-200 group-hover:border-emerald-500"
+              className="w-full bg-white dark:bg-[#04070d] border-2 border-emerald-500/50 focus:border-emerald-500 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm md:text-base font-mono-code text-slate-900 dark:text-emerald-300 font-bold tracking-wide shadow-inner truncate transition-all duration-200 group-hover:border-emerald-500"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
 
           <button
             onClick={handleCopy}
-            className={`flex items-center justify-center space-x-1.5 px-5 py-2.5 rounded-xl font-bold text-white dark:text-slate-950 shadow-lg transition transform active:scale-95 text-xs tracking-wide ${copied
+            className={`flex items-center justify-center space-x-1.5 px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-white dark:text-slate-950 shadow-lg transition transform active:scale-95 text-xs sm:text-sm tracking-wide ${copied
                 ? 'bg-emerald-700 dark:bg-emerald-400 shadow-emerald-500/40'
                 : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-gradient-to-r dark:from-emerald-500 dark:via-emerald-400 dark:to-teal-400 dark:hover:from-emerald-400 dark:hover:to-teal-300 shadow-emerald-500/30'
               }`}
