@@ -8,12 +8,12 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  isDark: true,
+  isDark: false,
   toggleTheme: () => {},
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isDark, setIsDark] = useState<boolean>(true);
+  const [isDark, setIsDark] = useState<boolean>(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('tempmail_theme');
@@ -26,9 +26,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         document.documentElement.classList.remove('dark');
       }
     } else {
-      // Default to dark mode for green cyber aesthetic
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
+      // Default to light mode (white theme)
+      setIsDark(false);
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
