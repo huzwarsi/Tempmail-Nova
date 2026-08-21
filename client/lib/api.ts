@@ -1,12 +1,28 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  const customUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && customUrl?.startsWith('http:')) {
-    // Prevent Mixed Content Error on Vercel HTTPS by using Next.js server rewrites proxy
-    return '/api/v1';
+  if (typeof window !== 'undefined') {
+    // On local browser testing, route directly to local Express server port 5001
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      const envUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (envUrl) {
+        return envUrl.endsWith('/api/v1') ? envUrl : `${envUrl}/api/v1`;
+      }
+      return 'http://localhost:5001/api/v1';
+    }
+
+    // Prevent Mixed Content Error on Vercel/HTTPS deployment
+    const customUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (window.location.protocol === 'https:' && customUrl?.startsWith('http:')) {
+      return '/api/v1';
+    }
   }
-  return customUrl ? `${customUrl}/api/v1` : '/api/v1';
+
+  const customUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (customUrl) {
+    return customUrl.endsWith('/api/v1') ? customUrl : `${customUrl}/api/v1`;
+  }
+  return '/api/v1';
 };
 
 const API = axios.create({

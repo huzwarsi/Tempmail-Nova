@@ -17,10 +17,23 @@ const getActiveDomainName = async () => {
   return process.env.DEFAULT_DOMAIN || 'tempmailnova.com';
 };
 
+/**
+ * Helper to generate a clean 5-6 character random username mixing letters and digits (e.g. "x8k2m9", "yicoy7")
+ */
+const generateShortUsername = () => {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const length = Math.floor(Math.random() * 2) + 5; // 5 or 6 characters
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 exports.generateRandomInbox = async (req, res, next) => {
   try {
     const domain = await getActiveDomainName();
-    const username = 'tmp_' + Math.random().toString(36).substring(2, 10);
+    const username = generateShortUsername();
     const address = `${username}@${domain}`.toLowerCase();
 
     const expirationHours = parseInt(process.env.MAX_INBOX_EXPIRATION_HOURS || '24', 10);

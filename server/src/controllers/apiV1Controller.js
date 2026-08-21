@@ -6,6 +6,16 @@ const Domain = require('../models/Domain');
  * Public REST API for developers (guaranteed clean format for external integrations)
  */
 
+const generateShortUsername = () => {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const length = Math.floor(Math.random() * 2) + 5;
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 exports.createInbox = async (req, res, next) => {
   try {
     const { username, domain: reqDomain } = req.body;
@@ -16,7 +26,7 @@ exports.createInbox = async (req, res, next) => {
       selectedDomain = defaultDomainDoc ? defaultDomainDoc.name : (process.env.DEFAULT_DOMAIN || 'tempmailnova.com');
     }
 
-    const cleanUser = username ? username.toLowerCase().replace(/[^a-z0-9._-]/g, '') : 'api_' + Math.random().toString(36).substring(2, 9);
+    const cleanUser = username ? username.toLowerCase().replace(/[^a-z0-9._-]/g, '') : generateShortUsername();
     const address = `${cleanUser}@${selectedDomain}`.toLowerCase();
 
     const expirationHours = parseInt(process.env.MAX_INBOX_EXPIRATION_HOURS || '24', 10);
