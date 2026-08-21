@@ -77,6 +77,7 @@ jobs:
             DEFAULT_DOMAIN=tempmailnova.com
             FRONTEND_URL=https://tempmailnova.com
             MAX_INBOX_EXPIRATION_HOURS=24
+            MONGO_URI=mongodb+srv://huzaifawarsi2006_db_user:ap77ZBrxDACIht4K@cluster0.iqvce0p.mongodb.net/tempmail?retryWrites=true&w=majority
             ENVEOF
             # Trim leading whitespace from .env lines
             sed -i 's/^[[:space:]]*//' .env
@@ -87,10 +88,14 @@ jobs:
 
             echo "✅ .env file created with production values"
 
+            # 5.6 Auto-prune old docker images/cache to free EC2 disk space BEFORE build
+            docker system prune -af --volumes 2>/dev/null || true
+            sudo journalctl --vacuum-time=1d 2>/dev/null || true
+
             # 6. Rebuild and restart production containers
             $COMPOSE_CMD -f docker-compose.prod.yml up -d --build
 
-            # 6. Cleanup dangling Docker images to preserve EC2 disk space
+            # 7. Cleanup dangling Docker images to preserve EC2 disk space
             docker image prune -f
 
             echo "Successfully deployed $BRANCH to AWS EC2!"
