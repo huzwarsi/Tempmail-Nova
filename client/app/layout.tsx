@@ -101,6 +101,7 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
+  manifest: '/manifest.json',
 };
 
 import Script from 'next/script';
@@ -129,7 +130,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             <InboxProvider>
               <Navbar />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 pt-3 sm:pt-4 md:pt-5">{children}</main>
               <Footer />
             </InboxProvider>
           </AuthProvider>
