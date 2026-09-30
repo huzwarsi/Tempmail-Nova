@@ -1,165 +1,114 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Mail, MessageSquare, Send, CheckCircle2, PhoneCall, Globe } from 'lucide-react';
+import { useRef, useState } from 'react';
+import Link from 'next/link';
+import { Send } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import PageHeader from '../../components/common/PageHeader';
+
+type Fields = { name: string; email: string; subject: string; message: string };
+type Errors = Partial<Record<keyof Fields, string>>;
+const EMPTY: Fields = { name: '', email: '', subject: '', message: '' };
+const SUPPORT_EMAIL = 'helptempmailnova@gmail.com';
+
+function validate(f: Fields): Errors {
+  const e: Errors = {};
+  if (!f.name.trim()) e.name = 'Enter your name.';
+  if (!f.email.trim()) e.email = 'Enter an email address so we can reply.';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) e.email = 'Enter a valid email address, like name@example.com.';
+  if (!f.subject.trim()) e.subject = 'Enter a subject.';
+  if (f.message.trim().length < 10) e.message = 'Write a message of at least 10 characters.';
+  return e;
+}
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+  const [fields, setFields] = useState<Fields>(EMPTY);
+  const [errors, setErrors] = useState<Errors>({});
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
+  const statusRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const [loading, setLoading] = useState(false);
+  const update = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFields(f => ({ ...f, [key]: e.target.value }));
+    if (errors[key]) setErrors(err => ({ ...err, [key]: undefined }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_mdmhd9a';
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_rjjc9al';
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'ekuskUcrGiLPmY7gR';
-
+    const found = validate(fields);
+    setErrors(found);
+    const firstInvalid = (Object.keys(found) as (keyof Fields)[])[0];
+    if (firstInvalid) {
+      formRef.current?.querySelector<HTMLElement>(`#contact-${firstInvalid}`)?.focus();
+      return;
+    }
+    setState('sending');
     try {
       await emailjs.send(
-        serviceId,
-        templateId,
-        {
-          from_name: name,
-          from_email: email,
-          subject: subject,
-          message: message,
-          to_email: 'helptempmailnova@gmail.com',
-        },
-        publicKey
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_mdmhd9a',
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_rjjc9al',
+        { from_name: fields.name, from_email: fields.email, subject: fields.subject, message: fields.message, to_email: SUPPORT_EMAIL },
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'ekuskUcrGiLPmY7gR',
       );
+      setState('sent');
+      setFields(EMPTY);
     } catch (error) {
-      console.error('EmailJS Submission Error:', error);
-    } finally {
-      setLoading(false);
-      setSubmitted(true);
-      setName('');
-      setEmail('');
-      setSubject('');
-      setMessage('');
+      console.error('EmailJS submission error:', error);
+      setState('failed'); // Keep what the person typed so they can retry or email us directly.
     }
+    requestAnimationFrame(() => statusRef.current?.focus());
   };
 
+  const field = (key: keyof Fields, label: string, input: React.ReactNode, hint?: string) => (
+    <div className="field">
+      <label htmlFor={`contact-${key}`}>{label}</label>
+      {input}
+      {hint && <p className="hint" id={`contact-${key}-hint`}>{hint}</p>}
+      {errors[key] && <p className="field-error" id={`contact-${key}-error`}>{errors[key]}</p>}
+    </div>
+  );
+  const describedBy = (key: keyof Fields, hint = false) => [hint && `contact-${key}-hint`, errors[key] && `contact-${key}-error`].filter(Boolean).join(' ') || undefined;
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 font-manrope">
-      <div className="text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-400 text-xs font-bold mb-3 font-mono">
-          <MessageSquare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>GET IN TOUCH</span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Contact Us & Support</h1>
-        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
-          Have questions or feedback? Send us a message below and we will get back to you shortly.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Contact Info Side Cards */}
-        <div className="space-y-4">
-          <div className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-emerald-500/25 space-y-2 shadow-md dark:shadow-lg">
-            <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-            <h4 className="font-bold text-slate-900 dark:text-white text-sm">Email Support</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono-code">helptempmailnova@gmail.com</p>
+    <div className="nova-public">
+      <PageHeader
+        crumbs={[{ name: 'Contact', path: '/contact' }]}
+        kicker="CONTACT"
+        title="Contact TempMail Nova"
+        lede="Questions, bug reports, corrections to a guide, or abuse reports. We reply by email to the address you give us."
+      />
+      <div className="nova-container page-body">
+        <div className="contact-grid">
+          <div className="prose-nova">
+            <h2>Before you write</h2>
+            <ul>
+              <li>Use an email address you will still be able to read. A temporary address may expire before we reply.</li>
+              <li>Please do not include passwords, verification codes or personal documents.</li>
+              <li>We cannot recover messages from a mailbox that has expired or been deleted.</li>
+            </ul>
+            <p>Many questions are already answered in the <Link href="/faq">FAQ</Link>.</p>
+            <h2>Email us directly</h2>
+            <p><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></p>
           </div>
 
-          <div className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-emerald-500/25 space-y-2 shadow-md dark:shadow-lg">
-            <Globe className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-            <h4 className="font-bold text-slate-900 dark:text-white text-sm">Help Center</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono-code">helptempmailnova@gmail.com</p>
-          </div>
-
-          <div className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 rounded-3xl border border-slate-200 dark:border-emerald-500/25 space-y-2 shadow-md dark:shadow-lg">
-            <PhoneCall className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-            <h4 className="font-bold text-slate-900 dark:text-white text-sm">Response Time</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400">Within 24 Hours</p>
-          </div>
-        </div>
-
-        {/* Contact Form */}
-        <div className="md:col-span-2 bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-emerald-500/25 shadow-xl">
-          {submitted ? (
-            <div className="p-8 text-center space-y-3">
-              <CheckCircle2 className="w-12 h-12 text-emerald-600 dark:text-emerald-400 mx-auto animate-bounce" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Message Sent Successfully!</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Thank you for reaching out. Our support team will get back to you shortly.
-              </p>
+          <div className="contact-panel">
+            <div ref={statusRef} tabIndex={-1} aria-live="polite">
+              {state === 'sent' && <p className="form-status success" style={{ marginBottom: 18 }}>Thanks, your message was sent. We will reply to the address you provided.</p>}
+              {state === 'failed' && <p className="form-status error" style={{ marginBottom: 18 }}>Your message could not be sent. Please try again, or email us at <a href={`mailto:${SUPPORT_EMAIL}`} style={{ textDecoration: 'underline' }}>{SUPPORT_EMAIL}</a>.</p>}
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="contact-name" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Your Name</label>
-                  <input
-                    id="contact-name"
-                    name="from_name"
-                    type="text"
-                    required
-                    placeholder="John Doe"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-[#04070d] border border-slate-300 dark:border-emerald-500/40 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono-code"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="contact-email" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Email Address</label>
-                  <input
-                    id="contact-email"
-                    name="from_email"
-                    type="email"
-                    required
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-[#04070d] border border-slate-300 dark:border-emerald-500/40 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono-code"
-                  />
-                </div>
+            <form ref={formRef} onSubmit={handleSubmit} className="nova-form" noValidate aria-label="Contact form">
+              <div className="form-row">
+                {field('name', 'Your name', <input id="contact-name" name="from_name" type="text" autoComplete="name" value={fields.name} onChange={update('name')} aria-invalid={!!errors.name} aria-describedby={describedBy('name')} required />)}
+                {field('email', 'Your email', <input id="contact-email" name="from_email" type="email" autoComplete="email" inputMode="email" value={fields.email} onChange={update('email')} aria-invalid={!!errors.email} aria-describedby={describedBy('email')} required />)}
               </div>
-
-              <div>
-                <label htmlFor="contact-subject" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Subject</label>
-                <input
-                  id="contact-subject"
-                  name="subject"
-                  type="text"
-                  required
-                  placeholder="e.g. Inquiry about temporary mail services"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-[#04070d] border border-slate-300 dark:border-emerald-500/40 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="contact-message" className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase mb-1">Message</label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  required
-                  rows={4}
-                  placeholder="Write your message here..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-[#04070d] border border-slate-300 dark:border-emerald-500/40 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 dark:bg-gradient-to-r dark:from-emerald-500 dark:to-teal-400 font-bold text-white dark:text-slate-950 transition text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                <Send className="w-4 h-4" />
-                <span>{loading ? 'Sending Message...' : 'Send Message'}</span>
+              {field('subject', 'Subject', <input id="contact-subject" name="subject" type="text" value={fields.subject} onChange={update('subject')} aria-invalid={!!errors.subject} aria-describedby={describedBy('subject')} required />)}
+              {field('message', 'Message', <textarea id="contact-message" name="message" rows={6} value={fields.message} onChange={update('message')} aria-invalid={!!errors.message} aria-describedby={describedBy('message', true)} required />, 'If you are reporting a problem, tell us what you did and what happened.')}
+              <button type="submit" className="primary-link" disabled={state === 'sending'}>
+                <Send size={16} aria-hidden="true" />{state === 'sending' ? 'Sending…' : 'Send message'}
               </button>
+              <p className="hint" style={{ fontSize: 13, color: '#5f705a' }}>Messages are delivered through EmailJS. See our <Link href="/privacy" style={{ textDecoration: 'underline' }}>privacy policy</Link>.</p>
             </form>
-          )}
+          </div>
         </div>
       </div>
     </div>

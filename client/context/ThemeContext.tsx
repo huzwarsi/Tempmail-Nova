@@ -16,20 +16,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [isDark, setIsDark] = useState<boolean>(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('tempmail_theme');
-    if (savedTheme) {
-      const dark = savedTheme === 'dark';
-      setIsDark(dark);
-      if (dark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } else {
-      // Default to light mode (white theme)
-      setIsDark(false);
-      document.documentElement.classList.remove('dark');
-    }
+    // The public website uses a consistent white theme.
+    setIsDark(false);
+    document.documentElement.classList.remove('dark');
   }, []);
 
   const toggleTheme = () => {

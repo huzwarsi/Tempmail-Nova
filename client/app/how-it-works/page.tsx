@@ -1,137 +1,72 @@
-import React from 'react';
-import type { Metadata } from 'next';
-import { Mail, Zap, Shield, Lock, Server, Cpu, RefreshCw, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { BreadcrumbListJsonLd } from '../../lib/structured-data';
+import { ArrowUpRight } from 'lucide-react';
+import PageHeader from '../../components/common/PageHeader';
+import { publicMetadata } from '../../lib/seo';
 
-export const metadata: Metadata = {
-  title: 'How It Works | TempMail Nova Disposable Mail Engine',
-  description:
-    'Understand the technical workflow behind real-time Haraka MX intake, WebSockets delivery, HTML sanitization, and automated 24-hour message purges.',
-  alternates: {
-    canonical: 'https://tempmailnova.com/how-it-works',
-  },
-  openGraph: {
-    type: 'website',
-    url: 'https://tempmailnova.com/how-it-works',
-    title: 'How It Works | TempMail Nova Disposable Mail Engine',
-    description:
-      'Understand the technical workflow behind real-time Haraka MX intake, WebSockets delivery, HTML sanitization, and automated 24-hour message purges.',
-    siteName: 'TempMail Nova',
-    images: [
-      {
-        url: 'https://tempmailnova.com/logo.png',
-        width: 512,
-        height: 512,
-        alt: 'How TempMail Nova Works',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'How It Works | TempMail Nova Disposable Mail Engine',
-    description: 'Technical workflow of TempMail Nova high-throughput disposable email engine.',
-    images: ['https://tempmailnova.com/logo.png'],
-  },
-};
+export const metadata = publicMetadata('/how-it-works', 'How TempMail Nova Works', 'How to get a temporary email address, copy it, receive messages and what happens when the 24-hour mailbox expires, plus the technical details for the curious.');
 
 export default function HowItWorksPage() {
-  const steps = [
-    {
-      step: '01',
-      title: 'Instant Mailbox Generation',
-      desc: 'When you open TempMail Nova, our client automatically generates a randomized temporary email address alias. No name, password, or registration is required.',
-      icon: Mail,
-    },
-    {
-      step: '02',
-      title: 'High-Speed Haraka SMTP Ingestion',
-      desc: 'When a third-party sender transmits an email, our dedicated Haraka SMTP mail servers process the incoming DNS MX traffic within milliseconds.',
-      icon: Server,
-    },
-    {
-      step: '03',
-      title: 'Sanitization & Security Parsing',
-      desc: 'The incoming MIME payload is stripped of malicious scripts, tracking pixels, and cross-site scripting risks before being saved to temporary encrypted storage.',
-      icon: Shield,
-    },
-    {
-      step: '04',
-      title: 'Real-Time WebSockets Push',
-      desc: 'Our backend uses Socket.io to push the new message payload directly into your active browser tab instantly with zero page reloads required.',
-      icon: Zap,
-    },
-    {
-      step: '05',
-      title: 'Automated 24-Hour Destruction',
-      desc: 'To protect your identity and minimize digital footprint, all emails, headers, and attachments are permanently purged after 24 hours.',
-      icon: Lock,
-    },
-  ];
-
   return (
-    <>
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', item: 'https://tempmailnova.com' },
-          { name: 'How It Works', item: 'https://tempmailnova.com/how-it-works' },
-        ]}
+    <div className="nova-public">
+      <PageHeader
+        crumbs={[{ name: 'How it works', path: '/how-it-works' }]}
+        kicker="HOW IT WORKS"
+        title="From a new address to your first message"
+        lede="Getting a temporary inbox takes a few seconds. Here is what to do, what to expect while you wait, and what happens when the mailbox expires."
       />
+      <div className="nova-container page-body">
+        <section className="split-section" aria-labelledby="steps-heading">
+          <div><h2 id="steps-heading">Using your inbox</h2><p>Everything happens on the <Link href="/" className="text-link">homepage</Link>.</p></div>
+          <ol className="info-steps">
+            <li><h3>Open the page</h3><p>A random address is created for you. Choose <strong>New address</strong> for a different one, or <strong>Custom address</strong> to pick the name and an available domain.</p></li>
+            <li><h3>Copy the address</h3><p>Select <strong>Copy email</strong> and paste it into the form that asked for an email. On a phone, you can also show the address as a QR code; the code contains only the address, not access to your inbox.</p></li>
+            <li><h3>Wait on the page</h3><p>New messages appear automatically. <strong>Refresh inbox</strong> checks immediately if you prefer. Most messages arrive quickly, but the timing is controlled by the website that sends them.</p></li>
+            <li><h3>Read, download, move on</h3><p>Open a message to read it with its formatting and images, follow its links, or download attachments. Choose <strong>Delete</strong> to remove the mailbox and its messages and start with a new address.</p></li>
+          </ol>
+        </section>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 font-manrope">
-        {/* Visual Breadcrumb */}
-        <nav className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
-          <Link href="/" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-            Home
-          </Link>
-          <ChevronRight className="w-3 h-3 text-slate-400" />
-          <span className="text-slate-900 dark:text-white font-semibold">How It Works</span>
-        </nav>
-
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-400 text-xs font-bold font-mono">
-            <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>TECHNICAL WORKFLOW</span>
+        <section className="split-section" aria-labelledby="expiry-heading">
+          <div><h2 id="expiry-heading">Expiry and deletion</h2></div>
+          <div className="prose-nova">
+            <p>Each mailbox expires <strong>24 hours after it is created</strong>, and the page shows a countdown. After that, you can no longer see its messages, and an automatic cleanup removes the mailbox, messages and attachments. The cleanup runs in the background, so removal can happen a little after the timer reaches zero.</p>
+            <p>If you open the site again on the same browser before expiry, it tries to reopen your current address. Save anything you need before the timer runs out.</p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            How TempMail Nova Works Under the Hood
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
-            Discover how our high-throughput SMTP engines and WebSockets push technology deliver real-time disposable inboxes securely.
-          </p>
-        </div>
+        </section>
 
-        <div className="space-y-6">
-          {steps.map((s, idx) => {
-            const Icon = s.icon;
-            return (
-              <div
-                key={idx}
-                className="bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-emerald-500/25 flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6 shadow-xl"
-              >
-                <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center justify-center text-emerald-600 dark:text-emerald-400 font-mono font-extrabold text-xs">
-                  <Icon className="w-5 h-5 mb-0.5" />
-                  <span>{s.step}</span>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">{s.title}</h3>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{s.desc}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <section className="split-section" aria-labelledby="not-arrived-heading">
+          <div><h2 id="not-arrived-heading">If nothing arrives</h2></div>
+          <div className="prose-nova">
+            <ol>
+              <li>Check that the address you pasted matches the one on the page.</li>
+              <li>Wait a minute and select Refresh inbox. Some senders queue messages.</li>
+              <li>Make sure you have not switched to a new address since you used it.</li>
+              <li>Some websites do not send to disposable addresses. If nothing arrives after a few minutes, that is the likely reason.</li>
+            </ol>
+            <p>More detail in <Link href="/blog/temporary-email-for-otp">using temporary email for verification codes</Link>.</p>
+          </div>
+        </section>
 
-        <div className="text-center pt-6">
-          <Link
-            href="/"
-            className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 dark:bg-gradient-to-r dark:from-emerald-500 dark:to-teal-400 font-bold text-white dark:text-slate-950 transition text-xs shadow-lg shadow-emerald-500/25"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Generate Your Free Temporary Email Now</span>
-          </Link>
-        </div>
+        <section className="split-section" aria-labelledby="privacy-heading">
+          <div><h2 id="privacy-heading">Privacy, in plain terms</h2></div>
+          <div className="prose-nova">
+            <p>The website you sign up with only sees the temporary address. However, the inbox is not protected by a password: <strong>anyone who knows an address may be able to read its messages</strong>. Random addresses are hard to guess; short custom names are not.</p>
+            <p>Do not use a temporary inbox for banking, healthcare, government services, work, or accounts you want to keep. See our <Link href="/privacy">privacy policy</Link> for what the service itself records.</p>
+          </div>
+        </section>
+
+        <section className="split-section" aria-labelledby="tech-heading">
+          <div><h2 id="tech-heading">For the technically curious</h2><p>The full walkthrough is in <Link href="/blog/how-temporary-email-works" className="text-link">how temporary email works</Link>.</p></div>
+          <div className="prose-nova">
+            <ul>
+              <li>Mail for our domains is received by a Haraka SMTP server and passed to our application.</li>
+              <li>Messages are parsed into headers, text, HTML and attachments. HTML is sanitized to remove scripts and shown in an isolated frame; remote images may load when you open a message.</li>
+              <li>Data is stored with an expiry time and removed by a database time-to-live index and an hourly cleanup job.</li>
+              <li>Your open page receives new-message notifications over Socket.io and also checks every few seconds.</li>
+            </ul>
+            <div className="button-row"><Link href="/#generator" className="primary-link">Get free email <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
+          </div>
+        </section>
       </div>
-    </>
+    </div>
   );
 }
