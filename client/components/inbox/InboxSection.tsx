@@ -14,8 +14,8 @@ export default function InboxSection() {
   const { selectedEmail, setSelectedEmail } = useInbox();
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div>
+    <div id="inbox" className="inbox-section" data-nosnippet>
+      <div className="h-full">
         {selectedEmail ? (
           <EmailViewer
             email={selectedEmail}

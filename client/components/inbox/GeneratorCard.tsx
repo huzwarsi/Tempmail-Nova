@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Copy, RefreshCw, Trash2, Edit3, QrCode, Check, Sparkles, ShieldCheck } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import { Copy, RefreshCw, Trash2, Edit3, QrCode, Check, ShieldCheck, Mail, ArrowUpRight } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { trackEvent } from '../../lib/analytics';
+const QRCodeSVG = dynamic(() => import('qrcode.react').then(module => module.QRCodeSVG), { ssr: false });
 import { useInbox } from '../../context/InboxContext';
 import Modal from '../common/Modal';
 import ExpirationTimer from './ExpirationTimer';
@@ -18,6 +20,7 @@ export default function GeneratorCard() {
     fetchEmails,
     loading,
     isGenerating,
+    inboxError,
   } = useInbox();
 
   const [copied, setCopied] = useState(false);
@@ -27,10 +30,12 @@ export default function GeneratorCard() {
   const [selectedDomain, setSelectedDomain] = useState('');
   const [customError, setCustomError] = useState('');
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     if (!currentAddress) return;
-    navigator.clipboard.writeText(currentAddress);
+    setCustomError('');
+    try { await navigator.clipboard.writeText(currentAddress); } catch { setCustomError('Could not copy. Select the address and copy it manually.'); return; }
     setCopied(true);
+    trackEvent('copy_email');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -47,123 +52,36 @@ export default function GeneratorCard() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto cyber-card rounded-2xl p-4 sm:p-5 lg:p-5.5 relative overflow-hidden transition-all duration-300">
-      {/* Header Status Bar */}
-      <div className="flex flex-row items-center justify-between gap-3 mb-3.5 pb-3 border-b border-slate-200 dark:border-emerald-500/20">
-        <div className="flex items-center space-x-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-md shadow-emerald-500/50"></span>
-          </span>
-          <span className="text-[10px] sm:text-[11px] font-extrabold text-emerald-700 dark:text-emerald-400 tracking-wider uppercase font-mono">
-            Live Mailbox Active
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-1.5">
-          <button
-            onClick={() => setCustomModalOpen(true)}
-            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30 transition shadow-sm"
-          >
-            <Edit3 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-            <span>Custom Address</span>
-          </button>
-          <button
-            onClick={() => setQrModalOpen(true)}
-            className="p-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30 transition shadow-sm"
-            title="Scan QR Code"
-          >
-            <QrCode className="w-3.5 h-3.5" />
-          </button>
-        </div>
+    <div className="mail-studio">
+      <div className="mail-studio-heading">
+        <div className="mail-studio-title"><span className="mail-studio-icon"><Mail size={21} /></span><div><h2>Your temporary email</h2><p>A fresh start for your inbox.</p></div></div>
+        <span className="mail-studio-status"><span className={currentAddress && !isGenerating ? 'ready' : ''} />{isGenerating ? 'Creating' : inboxError ? 'Check connection' : currentAddress ? 'Ready to receive' : 'Connecting'}</span>
       </div>
-
-      {/* Primary Email Box Container */}
-      <div className="space-y-2 mb-4">
-        <label htmlFor="temp-email-address" className="block text-[10px] sm:text-[11px] font-bold text-emerald-700 dark:text-emerald-400/90 uppercase tracking-widest font-mono">
-          YOUR TEMPORARY EMAIL ADDRESS:
-        </label>
-
-        <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
-          <div className="relative flex-1 group">
-            <input
-              id="temp-email-address"
-              name="tempEmailAddress"
-              type="text"
-              readOnly
-              aria-label="Your temporary email address"
-              value={isGenerating ? 'Generating email address...' : (currentAddress || 'Generating email address...')}
-              className="w-full bg-white dark:bg-[#04070d] border-2 border-emerald-500/50 focus:border-emerald-500 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm md:text-base font-mono-code text-slate-900 dark:text-emerald-300 font-bold tracking-wide shadow-inner truncate transition-all duration-200 group-hover:border-emerald-500"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            </div>
-          </div>
-
-          <button
-            onClick={handleCopy}
-            className={`flex items-center justify-center space-x-1.5 px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-white dark:text-slate-950 shadow-md transition transform active:scale-95 text-xs sm:text-sm tracking-wide ${copied
-                ? 'bg-emerald-700 dark:bg-emerald-400 shadow-emerald-500/40'
-                : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 shadow-emerald-500/20'
-              }`}
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
-                <span>COPIED!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>COPY</span>
-              </>
-            )}
-          </button>
+      {inboxError && <p role="alert" className="mail-studio-error">{inboxError}</p>}
+      {customError && !customModalOpen && <p role="alert" className="mail-studio-error">{customError}</p>}
+      <div className="mail-address-panel">
+        <div className="mail-address-caption"><label htmlFor="temp-email-address">YOUR TEMPORARY EMAIL ADDRESS</label><ShieldCheck size={16} /></div>
+        <div className="mail-address-row">
+          <input id="temp-email-address" name="tempEmailAddress" type="text" readOnly spellCheck={false} aria-label="Your temporary email address" onFocus={event => event.target.select()} value={isGenerating ? 'Creating your address...' : currentAddress || (inboxError ? 'Connection unavailable' : 'Creating your address...')} />
+          <button className="mail-copy" onClick={handleCopy} disabled={!currentAddress || isGenerating} aria-live="polite">{copied ? <Check size={18} /> : <Copy size={18} />}<span>{copied ? 'Copied!' : 'Copy email'}</span></button>
         </div>
+        <div className="mail-address-bottom"><span>Copy it into a one-time signup.</span><button onClick={() => setQrModalOpen(true)} disabled={!currentAddress || isGenerating} aria-label="Scan email QR code"><QrCode size={15} /><span>QR code</span></button></div>
       </div>
-
-      {/* Control Buttons & Expiration Tracker */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
-        <div className="flex items-center space-x-1.5">
-          <button
-            onClick={generateRandomInbox}
-            disabled={loading}
-            className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-[11px] font-bold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-emerald-500/25 transition shadow-sm disabled:opacity-50"
-          >
-            <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-            <span>Change Email</span>
-          </button>
-
-          <button
-            onClick={() => fetchEmails(currentAddress, true)}
-            disabled={loading}
-            className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-[11px] font-bold text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-emerald-500/25 transition shadow-sm disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3 h-3 text-emerald-600 dark:text-emerald-400 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
-          </button>
-
-          <button
-            onClick={deleteCurrentInbox}
-            disabled={loading}
-            className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 transition shadow-sm disabled:opacity-50"
-          >
-            <Trash2 className="w-3 h-3" />
-            <span>Delete</span>
-          </button>
-        </div>
-
-        <div className="w-full sm:w-52 mt-1 sm:mt-0">
-          <ExpirationTimer expiresAt={inboxDetails?.expiresAt} />
-        </div>
+      <div className="mail-actions">
+        <button onClick={() => generateRandomInbox('new_address')} disabled={loading || isGenerating}><RefreshCw size={16} className={isGenerating ? 'animate-spin' : ''} /><span>{currentAddress ? 'New address' : 'Create free email'}</span></button>
+        <button onClick={() => { setCustomError(''); setCustomModalOpen(true); }} disabled={loading || isGenerating}><Edit3 size={16} /><span>Custom address</span><ArrowUpRight size={13} className="action-arrow" /></button>
+        <button onClick={() => fetchEmails(currentAddress, true)} disabled={loading || !currentAddress}><RefreshCw size={16} className={loading && !isGenerating ? 'animate-spin' : ''} /><span>Refresh inbox</span></button>
+        <button className="mail-delete" onClick={deleteCurrentInbox} disabled={loading || !currentAddress}><Trash2 size={16} /><span>Delete</span></button>
       </div>
+      <div className="mail-studio-footer"><span><ShieldCheck size={14} /> No signup required.</span><div className="mail-lifetime">{inboxDetails?.expiresAt ? <ExpirationTimer expiresAt={inboxDetails.expiresAt} /> : <span>Auto-deletes after 24 hours</span>}</div></div>
 
       {/* QR Modal */}
-      <Modal isOpen={qrModalOpen} onClose={() => setQrModalOpen(false)} title="Scan Email QR Code">
+      <Modal isOpen={qrModalOpen} onClose={() => setQrModalOpen(false)} title="Share this email address">
         <div className="flex flex-col items-center justify-center p-4 space-y-4">
           <div className="bg-white p-5 rounded-2xl shadow-xl border border-slate-200">
-            <QRCodeSVG value={currentAddress || ''} size={190} />
+            {qrModalOpen && <QRCodeSVG value={currentAddress || ''} size={190} />}
           </div>
+          <p className="text-xs text-slate-600 text-center">Scan to copy the address. This does not open the inbox on another device.</p>
           <p className="text-xs font-mono-code text-emerald-700 dark:text-emerald-400 text-center font-bold">{currentAddress}</p>
         </div>
       </Modal>

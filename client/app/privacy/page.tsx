@@ -1,119 +1,73 @@
-import React from 'react';
-import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
-import { BreadcrumbListJsonLd } from '../../lib/structured-data';
+import LegalPage from '../../components/common/LegalPage';
+import { publicMetadata } from '../../lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy | TempMail Nova',
-  description:
-    'Read the official TempMail Nova Privacy Policy detailing GDPR, CCPA, log files, cookie usage, and automated 24-hour mail deletion.',
-  alternates: {
-    canonical: 'https://tempmailnova.com/privacy',
-  },
-  openGraph: {
-    type: 'website',
-    url: 'https://tempmailnova.com/privacy',
-    title: 'Privacy Policy | TempMail Nova',
-    description:
-      'Read the official TempMail Nova Privacy Policy detailing GDPR, CCPA, log files, cookie usage, and automated 24-hour mail deletion.',
-    siteName: 'TempMail Nova',
-    images: [
-      {
-        url: 'https://tempmailnova.com/logo.png',
-        width: 512,
-        height: 512,
-        alt: 'TempMail Nova Privacy Policy',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Privacy Policy | TempMail Nova',
-    description: 'Read the official TempMail Nova Privacy Policy.',
-    images: ['https://tempmailnova.com/logo.png'],
-  },
-};
+export const metadata = publicMetadata('/privacy', 'Privacy Policy', 'What TempMail Nova collects when you use a temporary inbox or contact us, how long mailbox data is kept, which third parties are involved, and your choices.');
+
+const ext = (href: string, label: string) => <a href={href} target="_blank" rel="noopener noreferrer">{label}<span className="sr-only"> (opens in a new tab)</span></a>;
 
 export default function PrivacyPolicyPage() {
   return (
-    <>
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', item: 'https://tempmailnova.com' },
-          { name: 'Privacy Policy', item: 'https://tempmailnova.com/privacy' },
-        ]}
-      />
-
-      <div className="max-w-4xl mx-auto px-4 py-12 text-slate-700 dark:text-slate-300 space-y-6 font-manrope">
-        {/* Visual Breadcrumb */}
-        <nav className="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
-          <Link href="/" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-            Home
-          </Link>
-          <ChevronRight className="w-3 h-3 text-slate-400" />
-          <span className="text-slate-900 dark:text-white font-semibold">Privacy Policy</span>
-        </nav>
-
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">Privacy Policy</h1>
-        <p className="text-xs text-emerald-700 dark:text-emerald-400 font-mono-code font-bold">Effective Date: August 2026</p>
-        
-        <div className="space-y-6 text-sm leading-relaxed bg-white dark:bg-[#080d16]/90 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-emerald-500/25 shadow-xl">
-          <section className="space-y-2">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">1. Introduction & Overview</h3>
-            <p>
-              At TempMail Nova, protecting your privacy is our core priority. This Privacy Policy document contains types of information that is collected and recorded by TempMail Nova and how we use it.
-            </p>
-          </section>
-
-          <section className="space-y-2">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">2. Log Files & Automated Purging</h3>
-            <p>
-              TempMail Nova follows a standard procedure of using log files. These files log visitors when they visit websites. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks.
-            </p>
-            <p className="font-bold text-emerald-700 dark:text-emerald-400">
-              Note on Mail Privacy: All incoming email messages, header details, plain text, HTML bodies, and parsed file attachments are stored temporarily and automatically purged from our servers after 24 hours.
-            </p>
-          </section>
-
-          <section className="space-y-2">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">3. Cookies & Google AdSense DoubleClick DART Cookies</h3>
-            <p>
-              Google is a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to tempmailnova.com and other sites on the internet.
-            </p>
-            <p>
-              Visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL: <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noreferrer" className="text-emerald-700 dark:text-emerald-400 underline font-bold">https://policies.google.com/technologies/ads</a>.
-            </p>
-          </section>
-
-          <section className="space-y-2">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">4. Third-Party Advertising Partners</h3>
-            <p>
-              Some of advertisers on our site may use cookies and web beacons. Our advertising partners include Google AdSense. Third-party ad servers or ad networks uses technologies like cookies, JavaScript, or Web Beacons that are used in their respective advertisements and links that appear on TempMail Nova.
-            </p>
-          </section>
-
-          <section className="space-y-2">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">5. GDPR & CCPA Data Protection Rights</h3>
-            <p>
-              We would like to make sure you are fully aware of all of your data protection rights. Every user is entitled to the following:
-            </p>
-            <ul className="list-disc pl-5 space-y-1 text-xs">
-              <li>The right to access – You have the right to request copies of your personal data.</li>
-              <li>The right to rectification – You have the right to request that we correct any information you believe is inaccurate.</li>
-              <li>The right to erasure – You have the right to request that we erase your personal data under certain conditions.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-2 pt-2 border-t border-slate-200 dark:border-emerald-500/20">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">6. Contact Information</h3>
-            <p className="text-xs">
-              If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <span className="font-mono-code text-emerald-700 dark:text-emerald-400 font-bold">helptempmailnova@gmail.com</span>.
-            </p>
-          </section>
-        </div>
-      </div>
-    </>
+    <LegalPage
+      path="/privacy"
+      crumb="Privacy policy"
+      title="Privacy policy"
+      lede="This policy explains what information TempMail Nova handles, why, and for how long. It covers the website at tempmailnova.com and its temporary inboxes."
+      updated="2026-09-30"
+      summary={<ul>
+        <li>You do not need an account to use a temporary inbox.</li>
+        <li>Mailboxes and their messages expire 24 hours after creation and are then removed by automatic cleanup.</li>
+        <li>Temporary inboxes are not password-protected. Anyone who knows an address may be able to read its messages.</li>
+        <li>Our servers keep operational logs, including IP addresses, for security and troubleshooting.</li>
+        <li>We use Google Analytics to understand how the site is used. We do not send mailbox addresses or message content to it.</li>
+        <li>The site does not currently show advertising.</li>
+      </ul>}
+      sections={[
+        { id: 'who', title: 'Who we are', body: <>
+          <p>TempMail Nova (&ldquo;we&rdquo;, &ldquo;us&rdquo;) operates this website. You can contact us about privacy at <a href="mailto:helptempmailnova@gmail.com">helptempmailnova@gmail.com</a> or through the <Link href="/contact">contact form</Link>.</p>
+        </> },
+        { id: 'mailbox', title: 'Temporary mailboxes and received email', body: <>
+          <p>When you open the site, we create a temporary address. When someone sends email to an address on our domains, we store the message so it can be shown to you: its headers (such as sender, recipients, subject and routing lines), its text and HTML content, and any attachments.</p>
+          <p>Each mailbox expires 24 hours after it is created. After expiry the messages are no longer shown, and an automatic process deletes expired mailboxes, messages and attachments. This process runs in the background, so deletion may happen shortly after the expiry time rather than at that exact second. You can also choose <strong>Delete</strong> to remove the current mailbox and its messages sooner.</p>
+          <p>Mail is delivered by address, and there is no password. <strong>Anyone who knows or guesses an address may be able to read the messages sent to it.</strong> Do not use temporary inboxes for sensitive information.</p>
+          <p>Received HTML is sanitized to remove scripts and displayed in an isolated frame. Emails can contain remote images; when your browser loads them, the sender&apos;s servers may receive your IP address and learn that the message was opened. Images are requested without sending our page address as the referrer.</p>
+        </> },
+        { id: 'logs', title: 'Server and security logs', body: <>
+          <p>Like most websites, our servers and hosting infrastructure record technical information about requests, such as IP address, date and time, the page or API path requested, response status and browser type. We use IP addresses to apply rate limits and to protect the service from abuse, and logs to diagnose problems.</p>
+          <p>We keep logs only as long as needed for these purposes and do not use them to build advertising profiles.</p>
+        </> },
+        { id: 'browser', title: 'Information stored in your browser', body: <>
+          <p>The site uses your browser&apos;s local storage, not cookies, for its own features:</p>
+          <ul>
+            <li><code>tempmail_current_address</code>: your current temporary address, so it reopens after a page refresh.</li>
+            <li><code>tempmail_theme</code>: your light or dark display preference, if set.</li>
+            <li><code>tempmail_token</code>: a sign-in token, only for administrators and registered users of account areas.</li>
+          </ul>
+          <p>You can remove these by clearing site data in your browser. See the <Link href="/cookies">cookie policy</Link> for more.</p>
+        </> },
+        { id: 'analytics', title: 'Analytics', body: <>
+          <p>On tempmailnova.com we use Google Analytics 4 to measure visits and a small set of product events, such as an address being generated or copied, the inbox being refreshed, a message arriving, or a guide being opened. We do not send email addresses, subjects, message content or message identifiers to Google Analytics.</p>
+          <p>For visitors in the European Economic Area, the United Kingdom and Switzerland, analytics cookies are switched off by default using Google Consent Mode, and Google Analytics receives only limited, cookieless measurements. Advertising-related signals are switched off for everyone.</p>
+          <p>Where cookies are used, Google Analytics processes information such as your IP address, device and browser details, and pages viewed. Google describes this in {ext('https://policies.google.com/technologies/partner-sites', 'How Google uses information from sites or apps that use its services')} and {ext('https://support.google.com/analytics/answer/11397207', 'Google Analytics cookie usage')}. You can block analytics with browser settings, content blockers, or the {ext('https://tools.google.com/dlpage/gaoptout', 'Google Analytics opt-out add-on')}.</p>
+        </> },
+        { id: 'contact-form', title: 'Contact form and emails to us', body: <>
+          <p>If you use the contact form, the name, email address, subject and message you enter are sent to our support inbox through EmailJS, a third-party form delivery service. See the {ext('https://www.emailjs.com/legal/privacy-policy/', 'EmailJS privacy policy')}. If you email us directly, we receive the message in our email account.</p>
+          <p>We use this information only to reply and to deal with your request, and keep it as long as needed for that and for our records.</p>
+        </> },
+        { id: 'advertising', title: 'Advertising', body: <>
+          <p>TempMail Nova does not currently display advertising or use advertising cookies. If we introduce advertising, we will update this policy and the cookie policy before ads appear, including any choices or consent required where you live.</p>
+        </> },
+        { id: 'sharing', title: 'When information is shared', body: <>
+          <p>We do not sell personal information. We share information only with service providers that help run the site (such as hosting, analytics and form delivery), when required by law, or when necessary to investigate abuse or protect the service and its users.</p>
+        </> },
+        { id: 'rights', title: 'Your choices and rights', body: <>
+          <p>You can delete your current mailbox at any time with the Delete button, clear the site&apos;s local storage in your browser, and block analytics as described above.</p>
+          <p>Depending on where you live, you may have rights to access, correct or delete personal information, or to object to certain processing. Contact us to make a request. Because temporary inboxes have no accounts, we may be unable to link a request to a particular mailbox, and data from expired mailboxes will already have been deleted.</p>
+        </> },
+        { id: 'changes', title: 'Changes to this policy', body: <>
+          <p>We will update this page when our practices change and revise the date at the top. Significant changes will be reflected here before they take effect where practical.</p>
+        </> },
+      ]}
+    />
   );
 }
-

@@ -1,50 +1,12 @@
 export const FAQ_LIST = [
-  {
-    q: 'What is a temporary email address?',
-    a: 'A temporary email address (also called disposable email or temp mail) is a short-lived inbox created without registration. It lets you receive confirmation links, OTP codes, and verification emails without exposing your personal email address.',
-  },
-  {
-    q: 'Is TempMail Nova free to use?',
-    a: 'Yes, TempMail Nova is free to use. You can generate disposable email addresses and receive incoming messages without paying subscription fees or creating an account.',
-  },
-  {
-    q: 'How long does a temporary email last on TempMail Nova?',
-    a: 'Incoming emails and mailboxes are stored temporarily and automatically purged from our servers after 24 hours to protect user privacy and prevent data accumulation.',
-  },
-  {
-    q: 'Can I choose a custom email address?',
-    a: 'Yes. You can click the "Custom Address" button on the mailbox generator to pick a custom username and select from available active domains.',
-  },
-  {
-    q: 'Can I receive verification emails and OTPs?',
-    a: 'Yes. TempMail Nova receives incoming messages in real-time, making it suitable for receiving signup confirmation links, verification codes, and one-time passwords.',
-  },
-  {
-    q: 'Can I send emails from TempMail Nova?',
-    a: 'No. Outbound email sending is disabled to prevent spam abuse and maintain server deliverability. TempMail Nova is strictly an incoming email inbox generator.',
-  },
-  {
-    q: 'Are file attachments supported?',
-    a: 'Yes. Attached files (images, documents, PDFs) are parsed and downloadable directly from the email message viewer in your browser.',
-  },
-  {
-    q: 'How does real-time email delivery work?',
-    a: 'Our backend uses WebSocket (Socket.io) connections. When an incoming email arrives at our Haraka SMTP server, it is processed and pushed immediately to your open browser session.',
-  },
-  {
-    q: 'Can I use TempMail Nova on mobile devices?',
-    a: 'Yes. TempMail Nova is fully responsive on smartphones and tablets. You can also scan the QR code on desktop to view your inbox on a mobile device.',
-  },
-  {
-    q: 'What happens when a mailbox expires?',
-    a: 'When the 24-hour expiration window completes, all associated messages, headers, and attachments are permanently removed during automated database cleanup runs.',
-  },
-  {
-    q: 'Is account registration required?',
-    a: 'No registration or personal information is required. You can generate a temporary mailbox instantly upon visiting the website.',
-  },
-  {
-    q: 'Why should I use a temporary email instead of my personal email?',
-    a: 'Using a disposable email address for one-time signups prevents your primary email from getting added to unwanted marketing databases, promotional spam lists, and potential data breach leaks.',
-  },
+  { q: 'What is temporary email?', a: 'Temporary email, also called temp mail or disposable email, is a short-lived address for receiving messages. Use it for a one-time task when you do not need ongoing access. It is a real receiving inbox, not a replacement for your personal email account.' },
+  { q: 'Is TempMail Nova free, and do I need an account?', a: 'Creating an address and receiving emails is free. No signup is required: a temporary address is generated when you open the page. Copy it, use it, and return here to read your messages.' },
+  { q: 'Can I receive verification emails and codes?', a: 'Yes, you can receive email verification links and one-time codes when the sending website accepts disposable email addresses. Delivery depends on the sender. If a message is delayed, check the address you entered and refresh your inbox. Use your personal email for accounts you need to keep or recover.' },
+  { q: 'How long does a mailbox last?', a: 'A mailbox expires 24 hours after creation. Expired mailboxes and messages are removed by automatic cleanup, which may not happen at the exact second shown on the timer. Save anything you need before expiry; do not rely on the address for future messages or account recovery.' },
+  { q: 'Is a temporary inbox safe for sensitive information?', a: 'It helps keep your primary address out of one-time signups, but it is not a confidential, password-protected mailbox. Anyone who knows the address may be able to read its messages. Do not use it for banking, healthcare, passwords, identity documents, or other sensitive information.' },
+  { q: 'Can I use it on my phone?', a: 'Yes. Open this website in your mobile browser, copy your temporary address, and keep the page available while you wait for mail. The QR code shares the email address as text; it does not sign you into the inbox on another device.' },
+  { q: 'Can I choose a custom address?', a: 'Choose Custom address to enter a username and select an available domain. If that address is already taken, choose another. Treat custom addresses with the same care as random ones: do not share sensitive information through them.' },
+  { q: 'Can I send emails or download attachments?', a: 'TempMail Nova is receive-only; it does not send emails. Received attachments can be downloaded from the message viewer. Only open files and links from senders you trust.' },
+  { q: 'How do inbox updates work?', a: 'Keep the page open to receive automatic updates. The inbox listens for new messages and also checks periodically. You can use Refresh inbox to check manually. A temporary address cannot guarantee that every sender will deliver to it.' },
+  { q: 'What happens when I choose New address or Delete?', a: 'New address switches you to a fresh mailbox. Delete removes the current mailbox and its messages, then creates a new address. Copy the new address before using it in a form, and remember that deleted messages cannot be recovered through this interface.' },
 ];

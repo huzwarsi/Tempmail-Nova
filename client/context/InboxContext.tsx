@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import API from '../lib/api';
+import { trackEvent } from '../lib/analytics';
 import { getSocket } from '../lib/socket';
 
 interface InboxContextType {
@@ -15,7 +16,8 @@ interface InboxContextType {
   loading: boolean;
   isGenerating: boolean;
   newEmailNotice: boolean;
-  generateRandomInbox: () => Promise<void>;
+  inboxError: string;
+  generateRandomInbox: (source?: 'automatic' | 'new_address' | 'after_delete') => Promise<void>;
   createCustomInbox: (customUsername: string, requestedDomain: string) => Promise<any>;
   deleteCurrentInbox: () => Promise<void>;
   fetchEmails: (address: string, showLoading?: boolean) => Promise<void>;
@@ -32,6 +34,7 @@ const InboxContext = createContext<InboxContextType>({
   loading: false,
   isGenerating: false,
   newEmailNotice: false,
+  inboxError: '',
   generateRandomInbox: async () => {},
   createCustomInbox: async () => {},
   deleteCurrentInbox: async () => {},
@@ -47,6 +50,19 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [newEmailNotice, setNewEmailNotice] = useState<boolean>(false);
+
+  const [inboxError, setInboxError] = useState('');
+  const knownMessages = useRef(new Map<string, Set<string>>());
+  const initialized = useRef(false);
+  // Seed restored mail without counting it as a new delivery; deduplicate socket/poll events.
+  const observeMessages = useCallback((address: string, messages: any[]) => {
+    const known = knownMessages.current.get(address);
+    if (known) messages.forEach(message => { if (!known.has(message._id)) trackEvent('receive_email'); });
+    const next = known || new Set<string>();
+    messages.forEach(message => next.add(message._id));
+    knownMessages.current.set(address, next);
+    if (knownMessages.current.size > 10) knownMessages.current.delete(knownMessages.current.keys().next().value!);
+  }, []);
 
   // Play notification ping
   const playNotificationPing = () => {
@@ -85,16 +101,20 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
     if (showLoading) setLoading(true);
     try {
       const { data } = await API.get(`/email/inbox/${address}`);
+      observeMessages(address, data.emails || []);
       setEmails(data.emails || []);
+      setInboxError('');
+      if (showLoading && initialized.current) trackEvent('refresh_inbox');
     } catch (err) {
-      console.warn('Error loading emails for inbox:', address);
+      setInboxError('Could not load messages. Please refresh your inbox.');
     } finally {
       if (showLoading) setLoading(false);
     }
-  }, []);
+  }, [observeMessages]);
 
   // Generate random new inbox
-  const generateRandomInbox = async () => {
+  const generateRandomInbox = async (source: 'automatic' | 'new_address' | 'after_delete' = 'automatic') => {
+    setInboxError('');
     setIsGenerating(true);
     setLoading(true);
     setEmails([]);
@@ -107,8 +127,10 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem('tempmail_current_address', data.inbox.address);
       }
       await fetchEmails(data.inbox.address, false);
+      trackEvent('generate_email', { source });
+      if (source === 'new_address') trackEvent('create_new_address');
     } catch (err) {
-      console.error('Failed to generate random inbox:', err);
+      setInboxError('Could not create an address. Please try again.');
     } finally {
       setLoading(false);
       setIsGenerating(false);
@@ -132,6 +154,7 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem('tempmail_current_address', data.inbox.address);
       }
       await fetchEmails(data.inbox.address, false);
+      trackEvent('generate_email', { source: 'custom' });
       return data;
     } catch (err) {
       throw err;
@@ -150,9 +173,9 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
     setSelectedEmail(null);
     try {
       await API.delete(`/inbox/${currentAddress}`);
-      await generateRandomInbox();
+      await generateRandomInbox('after_delete');
     } catch (err) {
-      console.error('Failed to delete inbox:', err);
+      setInboxError('Could not delete this inbox. Please try again.');
     } finally {
       setLoading(false);
       setIsGenerating(false);
@@ -161,13 +184,15 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Mount initialization: restore saved address from LocalStorage or generate new one
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
     fetchDomains();
 
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('tempmail_current_address');
       if (saved) {
         setCurrentAddress(saved);
-        fetchEmails(saved, true);
+        fetchEmails(saved, false);
       } else {
         generateRandomInbox();
       }
@@ -185,7 +210,8 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
 
       const handleNewEmail = (newEmail: any) => {
         if (newEmail.inboxAddress?.toLowerCase() === currentAddress?.toLowerCase()) {
-          setEmails((prev) => [newEmail, ...prev]);
+          observeMessages(currentAddress, [newEmail]);
+          setEmails((prev) => prev.some(email => email._id === newEmail._id) ? prev : [newEmail, ...prev]);
           setNewEmailNotice(true);
           playNotificationPing();
           setTimeout(() => setNewEmailNotice(false), 5000);
@@ -204,7 +230,7 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
         clearInterval(pollInterval);
       };
     }
-  }, [currentAddress, fetchEmails]);
+  }, [currentAddress, fetchEmails, observeMessages]);
 
   return (
     <InboxContext.Provider
@@ -219,6 +245,7 @@ export const InboxProvider = ({ children }: { children: React.ReactNode }) => {
         loading,
         isGenerating,
         newEmailNotice,
+        inboxError,
         generateRandomInbox,
         createCustomInbox,
         deleteCurrentInbox,

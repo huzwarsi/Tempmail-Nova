@@ -7,17 +7,12 @@ export function WebSiteJsonLd() {
     name: 'TempMail Nova',
     url: 'https://tempmailnova.com',
     description: 'Free disposable temporary email generator with real-time inbox updates and automatic 24-hour message purges.',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: 'https://tempmailnova.com/blog?q={search_term_string}',
-      'query-input': 'required name=search_term_string',
-    },
   };
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
     />
   );
 }
@@ -34,7 +29,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
     />
   );
 }
@@ -58,7 +53,7 @@ export function BreadcrumbListJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
     />
   );
 }
@@ -80,7 +75,7 @@ export function FAQPageJsonLd({ faqs }: { faqs: { question: string; answer: stri
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
     />
   );
 }
@@ -90,29 +85,32 @@ export function ArticleJsonLd({
   description,
   url,
   datePublished,
-  authorName,
+  dateModified,
 }: {
   title: string;
   description: string;
   url: string;
   datePublished: string;
-  authorName: string;
+  dateModified?: string;
 }) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: title,
-    description: description,
-    url: url,
-    datePublished: datePublished,
-    dateModified: datePublished,
+    description,
+    url,
+    datePublished,
+    // A hand-maintained edit date only; never generated at build time.
+    dateModified: dateModified ?? datePublished,
+    image: 'https://tempmailnova.com/og-image.png',
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': url,
     },
     author: {
       '@type': 'Organization',
-      name: authorName || 'TempMail Nova Editorial Team',
+      name: 'TempMail Nova',
+      url: 'https://tempmailnova.com/about',
     },
     publisher: {
       '@type': 'Organization',
@@ -127,7 +125,20 @@ export function ArticleJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
     />
   );
+}
+
+export function WebApplicationJsonLd() {
+  const schema = {
+    '@context': 'https://schema.org', '@type': 'WebApplication',
+    '@id': 'https://tempmailnova.com/#application',
+    name: 'TempMail Nova', url: 'https://tempmailnova.com',
+    description: 'Create a free temporary email address without signup and receive one-time messages in a 24-hour inbox.',
+    applicationCategory: 'CommunicationApplication', operatingSystem: 'Web browser',
+    browserRequirements: 'Requires JavaScript and an internet connection',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />;
 }

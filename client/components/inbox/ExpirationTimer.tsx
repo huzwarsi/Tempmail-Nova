@@ -42,7 +42,7 @@ export default function ExpirationTimer({ expiresAt }: ExpirationTimerProps) {
     <div className="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 text-xs font-mono">
       <div className="flex items-center space-x-1.5 text-emerald-800 dark:text-emerald-300 font-bold">
         <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-        <span>Purge Timer:</span>
+        <span>Expires in:</span>
       </div>
       <span className="font-extrabold text-emerald-700 dark:text-emerald-400 tracking-wider">
         {pad(timeLeft.hours)}:{pad(timeLeft.minutes)}:{pad(timeLeft.seconds)}

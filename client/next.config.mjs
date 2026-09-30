@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  trailingSlash: false,
   async redirects() {
     return [
       {
@@ -18,6 +19,10 @@ const nextConfig = {
   },
   async headers() {
     return [
+      ...['/api/:path*', '/socket.io/:path*', '/admin/:path*', '/dashboard/:path*'].map(source => ({
+        source,
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }, { key: 'Cache-Control', value: 'private, no-store' }],
+      })),
       {
         source: '/:path*',
         headers: [
@@ -62,4 +67,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
